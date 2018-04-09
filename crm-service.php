@@ -6,7 +6,7 @@
  *
  * Plugin Name:				CRM-Service
  * Plugin URI:
- * Description: 			Integration between Teamtailor and WordPress
+ * Description: 			Integration between CRM-Service and WordPress
  * Author: 						sippis
  * Author URI:				https://www.dude.fi
  * License:           GPLv3
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-06 10:24:36
+ * @Last Modified time: 2018-04-09 09:38:32
  */
 
 namespace CRMServiceWP;
