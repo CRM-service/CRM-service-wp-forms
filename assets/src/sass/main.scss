@@ -1,0 +1,75 @@
+/*
+* @Author: Timi Wahalahti
+* @Date:   2018-04-05 16:24:26
+* @Last Modified by:   Timi Wahalahti
+* @Last Modified time: 2018-04-06 10:23:37
+*/
+
+@import 'jeet/scss/index';
+
+ul#adminmenu {
+	li#menu-posts-crmservice_form {
+		ul.wp-submenu {
+			li.wp-first-item {
+				display: none;
+			}
+		}
+	}
+}
+
+.crmservice-metabox-settings-wrap {
+	margin-bottom: 25px;
+
+	.row {
+		@include clearfix;
+
+		.col {
+			@include column(1/2);
+
+			p.label {
+				font-size: 1.25em;
+				font-weight: 600;
+			}
+
+			select {
+				width: 100%;
+			}
+		}
+	}
+}
+
+.crmservice-metabox-connections-wrap {
+	.row {
+		@include clearfix;
+
+		&.row-head {
+			p {
+				font-size: 1.25em;
+				font-weight: 600;
+			}
+		}
+
+		&.row-field {
+			border-top: 1px solid lightgrey;
+			padding: 15px 0;
+
+			&:last-of-type {
+				padding-bottom: 0;
+			}
+
+			p {
+				margin: 0;
+				margin-top: 4px;
+			}
+
+			select {
+				margin: 0;
+				width: 100%;
+			}
+		}
+
+		.col {
+			@include column(1/2);
+		}
+	}
+}
