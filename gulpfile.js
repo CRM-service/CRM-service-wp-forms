@@ -119,6 +119,7 @@ gulp.task('js', function() {
       // Normal scripts
       gulp.src(
         [
+          'node_modules/tippy.js/dist/tippy.all.js',
           src + '/js/metabox.js'
         ])
         .pipe(concat('metabox.js'))

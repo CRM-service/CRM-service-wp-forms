@@ -2,10 +2,18 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-04 16:36:49
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-07 13:43:53
+* @Last Modified time: 2018-04-17 10:38:19
 */
 
 jQuery( document ).ready(function( $ ) {
+
+	// Tooltips
+	tippy('span.status', {
+		arrow: true,
+  	arrowType: 'sharp',
+  	size: 'small',
+  	placement: 'top-start'
+	});
 
 	// Defaults.
 	var form_fields = [];
@@ -13,6 +21,22 @@ jQuery( document ).ready(function( $ ) {
 
 	// Run module field select disable in case we have data from databse.
 	disable_module_fields_used();
+
+	// if db module, get fields
+	if ( $('select[name="crmservice_module"] option:selected').length ) {
+    $.ajax({
+			type: 'GET',
+			dataType: 'json',
+			data: { module: $('select[name="crmservice_module"] option:selected').val() },
+			url: crmservice.root + 'crmservice/v1/module/fields',
+			beforeSend: function ( xhr ) {
+				xhr.setRequestHeader( 'X-WP-Nonce', crmservice.nonce );
+			},
+			success: function(data) {
+				module_fields = data;
+			}
+		});
+  }
 
 	// Listen module field select changes.
 	$(document).on('change', '.crmservice-metabox-connections-wrap .row-field .col-module select', function() {
@@ -61,6 +85,26 @@ jQuery( document ).ready(function( $ ) {
 		});
 	});
 
+	// Listen module field selection changes and list options below if field type is select or multiselect.
+	$(document).on('change', '.crmservice-metabox-connections-wrap .col-module select', function() {
+
+		// Hide select options.
+		$('.crmservice-metabox-connections-wrap .col-module p.select-options').hide();
+
+		selection_type = $(this).find('option:selected').attr('data-type');
+		if ( 'Select' === selection_type || 'MultiSelect' === selection_type ) {
+			module_field = _.findWhere( module_fields, { name: $(this).find('option:selected').val() } );
+
+			options = $.map(module_field.picklist_values, function(val, i){
+    		return i;
+			});
+
+			// Show possible selection values
+			$(this).parent().find('p.select-options span').html( options.join(', ') );
+			$(this).parent().find('p.select-options').show();
+		}
+	});
+
 	// Function to disable module fields used elsewhere.
 	function disable_module_fields_used() {
 		$('.crmservice-metabox-connections-wrap .row-field .col-module select').each(function() {
@@ -98,8 +142,12 @@ jQuery( document ).ready(function( $ ) {
 		$.each( module_fields, function(i, item) {
 	    $('.crmservice-metabox-connections-wrap .col-module select').append( $('<option>', {
 	        value: item.name,
-	        text : item.label
+	        text: item.label + ' (' + item.type + ')', // TODO: translate type
+	        'data-type': item.type
 	    }));
 		});
+
+		// Hide select options.
+		$('.crmservice-metabox-connections-wrap .col-module p.select-options').hide();
 	} // end function populate_module_fields
 });

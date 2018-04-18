@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-05 16:24:26
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-06 10:23:37
+* @Last Modified time: 2018-04-17 13:22:06
 */
 
 @import 'jeet/scss/index';
@@ -60,6 +60,17 @@ ul#adminmenu {
 			p {
 				margin: 0;
 				margin-top: 4px;
+
+				&.select-options {
+					display: none; // do not display on default
+					color: grey;
+					font-weight: 600;
+
+					span {
+						font-style: italic;
+						font-weight: 400;
+					}
+				}
 			}
 
 			select {
@@ -70,6 +81,55 @@ ul#adminmenu {
 
 		.col {
 			@include column(1/2);
+		}
+	}
+}
+
+.crmservice-settings {
+	p {
+		&.clear-cache {
+			margin-top: -10px;
+			margin-bottom: 20px;
+		}
+
+		&.reset {
+			a {
+				color: grey;
+
+				&:hover,
+				&:focus {
+					color: #00a0d2;
+				}
+			}
+		}
+	}
+}
+
+body.post-type-crmservice_form {
+	table.wp-list-table.posts {
+		th.column-status,
+		td.column-status {
+			width: 15px;
+		}
+
+		tr.type-crmservice_form {
+			td.column-status {
+				span.status {
+					display: block;
+					height: 15px;
+					width: 15px;
+					border-radius: 15px;
+					background-color: #46b450;
+
+					&.status-error {
+						background-color: #dc3232;
+					}
+
+					&.status-warn {
+						background-color: #ffb900;
+					}
+				}
+			}
 		}
 	}
 }

@@ -33,5 +33,7 @@
     "sanitize.css": "^4.1.0",
     "typographic": "^3.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tippy.js": "^2.5.2"
+  }
 }

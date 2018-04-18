@@ -5,12 +5,13 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-03-30 17:23:15
+ * @Last Modified time: 2018-04-17 15:44:07
  *
  * @package crmservice
  */
 
 namespace CRMServiceWP\Admin\Settings;
+
 use CRMServiceWP;
 use CRMServiceWP\Helper;
 
@@ -20,6 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  *  Class for plugin settings.
+ *
+ *  @since 0.1.0-alpha
  */
 class Settings extends CRMServiceWP\Plugin {
 	/**
@@ -34,7 +37,7 @@ class Settings extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 0.1.0-alpha
 	 */
-	function __construct() {
+	public function __construct() {
 		// Get instance of helper.
 		self::$helper = new CRMServiceWP\Helper\Helper();
 
@@ -54,6 +57,9 @@ class Settings extends CRMServiceWP\Plugin {
 		// Add our settings page to menu and make the actual page.
 		\add_action( 'admin_menu', array( __CLASS__, 'add_menu_page' ) );
 		\add_action( 'admin_init', array( __CLASS__, 'add_setting_sections_and_fields' ) );
+
+		\add_action( 'admin_init', array( __CLASS__, 'maybe_do_reset' ) );
+		\add_action( 'admin_init', array( __CLASS__, 'maybe_clear_cache' ) );
 	} // end run
 
 	/**
@@ -92,6 +98,7 @@ class Settings extends CRMServiceWP\Plugin {
 	 *  @since  0.0.1-alpha
 	 */
 	public static function page_output() {
+		self::maybe_send_bugreport();
 		include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/settings.php' );
 	} // end page_output
 
@@ -151,9 +158,8 @@ class Settings extends CRMServiceWP\Plugin {
 
 	/**
 	 *  So, there's really no good reason to document all these field callbacks
-	 *
-	 *  @codingStandardsIgnoreStart
 	 */
+	// phpcs:disable
 	public static function section_callback_api() {
 		return;
 	} // end section_callback_api
@@ -205,8 +211,75 @@ class Settings extends CRMServiceWP\Plugin {
 
 		return $value;
 	} // end function sanitize_callback_api_baseurl_scheme
+	// // phpcs:enable
 
-	// @codingStandardsIgnoreEnd
+	public static function maybe_clear_cache() {
+		if ( isset( $_GET['crmservice_purgecache'] ) && \current_user_can( 'manage_options' ) ) {
+			if ( \wp_verify_nonce( wp_unslash( $_GET['crmservice_nonce'] ), 'crmservice_purgecache' ) ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
+				self::$helper->purge_cache();
+				\wp_redirect( self::$helper->get_plugin_page_url( array(
+					'page'								=> 'crmservice',
+					'crmservice_message'	=> 'purgecache',
+				) ) );
+				exit;
+			}
+		}
+	} // end maybe_do_reset
+
+	public static function maybe_do_reset() {
+		if ( isset( $_GET['crmservice_reset'] ) && \current_user_can( 'manage_options' ) ) {
+			if ( \wp_verify_nonce( wp_unslash( $_GET['crmservice_nonce'] ), 'crmservice_reset' ) ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
+				self::$helper->reset();
+				wp_redirect( self::$helper->get_plugin_page_url( array(
+					'page'								=> 'crmservice',
+					'crmservice_message'	=> 'reset',
+				) ) );
+				exit;
+			}
+		}
+	} // end maybe_do_reset
+
+	public static function maybe_send_bugreport() {
+		if ( \current_user_can( 'manage_options' ) && isset( $_POST['crmservice-sendbugreport'] ) ) :
+			if ( isset( $_POST['crmservice_bugreport_send'] ) && \wp_verify_nonce( wp_unslash( $_POST['crmservice_bugreport_send'] ), 'crmservice_bugreport' ) ) : // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
+				global $wp_version;
+
+				if ( ! function_exists( 'get_plugins' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+
+				$soap_support = Helper\Helper::check_soap_support();
+				$credentials_health = Helper\Helper::check_api_settings_existance();
+				$api_health = Helper\Helper::check_api_credentials_health();
+				$form_plugin = Helper\Helper::get_form_plugin( true );
+				$form_plugin_active = Helper\Helper::check_if_form_plugin_active();
+				$plugins = \get_plugins();
+				$theme = \wp_get_theme();
+
+				// phpcs:disable
+				$message = 'Name: ' . \sanitize_text_field( $_POST['name'] ) . "\r\n";
+				$message .= 'Email: ' . \sanitize_text_field( $_POST['email'] ) . "\r\n\r\n";
+				$message .= \sanitize_textarea_field( $_POST['message'] ) . "\r\n\r\n";
+				$message .= "WP: {$wp_version}\r\n";
+				$message .= 'PHP: ' . phpversion() . "\r\n";
+				$message .= 'Account ID: ' . \get_option( 'crmservice_api_baseurl' ) . "\r\n";
+				$message .= 'SOAP support: ' . $soap_support . "\r\n";
+				$message .= 'Credentials health: ' . $credentials_health . "\r\n";
+				$message .= 'API health: ' . $api_health . "\r\n";
+				$message .= 'Form plugin: ' . $form_plugin . ' (' . $form_plugin_active . ")\r\n";
+				$message .= 'Theme: ' . $theme->get( 'Name' ) . ' (' . $theme->get( 'Version' ) . ")\r\n";
+				$message .= '' . "\r\n";
+				$message .= 'Plugins:' . "\r\n";
+				// phpcs:enable
+
+				foreach ( $plugins as $plugin => $data ) {
+					$message .= "{$plugin}: " . $data['Version'] . "\r\n";
+				}
+
+				\wp_mail( 'timi@dude.fi', 'WP Plugin bug report', $message );
+			endif;
+		endif;
+	} // end maybe_send_bugreport
 }
 
 new Settings();

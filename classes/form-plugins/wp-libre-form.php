@@ -5,12 +5,13 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-07 13:48:58
+ * @Last Modified time: 2018-04-18 10:50:18
  *
  * @package crmservice
  */
 
 namespace CRMServiceWP\Forms\WPLibreForm;
+
 use CRMServiceWP;
 use CRMServiceWP\Helper;
 use CRMServiceWP\Forms\Common;
@@ -72,7 +73,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 				$form_id = \get_the_id();
 
 				// If form has no title, use ID.
-				$forms[ $form_id ] = ( ! empty( $title ) ) ? $title : sprintf( \esc_attr__( 'Form ID: %d', 'crmservice' ), $form_id );
+				$forms[ $form_id ] = ( ! empty( $form_title ) ) ? $form_title : sprintf( \esc_attr__( 'Form ID: %d', 'crmservice' ), $form_id );
 			}
 		}
 
@@ -91,7 +92,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			return;
 		}
 
-		$fields = get_post_meta( $form_id, '_wplf_fields', true );
+		$fields = \get_post_meta( $form_id, '_wplf_fields', true );
 		$fields = explode( ',', $fields );
 
 		// In WPLF field key and name is the same.
@@ -100,7 +101,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			unset( $fields[ $field_key ] );
 		}
 
-		$required_fields = get_post_meta( $form_id, '_wplf_required', true );
+		$required_fields = \get_post_meta( $form_id, '_wplf_required', true );
 
 		return array(
 			'fields'		=> $fields,
@@ -108,11 +109,41 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		);
 	} // end get_fields
 
+	public function get_integration_count_for_form( $form_id = null ) {
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$query = new \WP_Query( array(
+			'post_type'   						=> 'crmservice_form',
+			'post_status' 						=> 'publish',
+			'posts_per_page'         	=> 1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
+			'no_found_rows'          	=> false,
+			'cache_results'          	=> true,
+			'update_post_term_cache' 	=> false,
+			'update_post_meta_cache' 	=> true,
+		) );
+
+		return $query->found_posts;
+	} // end get_integration_count_for_form
+
 	/**
 	 *  Map submission data to selected fields for sending to CRM.
 	 *
 	 *  @since  0.1.0-alpha
-	 *  @param  object  $wplf_data WPLF submiddion data
+	 *  @param  object $wplf_data WPLF submiddion data.
 	 *  @return mixed              array with mapped data or false
 	 */
 	public static function map_fields_for_send( $wplf_data = null ) {
@@ -130,8 +161,18 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			'post_type'   						=> 'crmservice_form',
 			'post_status' 						=> 'publish',
 			'posts_per_page'         	=> 1,
-			'meta_key'       					=> '_crmservice_form',
-			'meta_value_num' 					=> (int)$wplf_data->form_id,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $wplf_data->form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
 			'no_found_rows'          	=> true,
 			'cache_results'          	=> true,
 			'update_post_term_cache' 	=> false,
@@ -141,7 +182,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		$form_field_connections = false;
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) { $query->the_post();
-				$form_field_connections = get_post_meta( get_the_id(), '_crmservice_connections', true );
+				$form_field_connections = \get_post_meta( get_the_id(), '_crmservice_connections', true );
 			}
 		}
 
@@ -149,7 +190,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			return false; // no connections, bail.
 		}
 
-		$submission_meta = get_post_meta( (int)$submission_id );
+		$submission_meta = \get_post_meta( (int) $submission_id );
 		$send = array();
 
 		foreach ( $form_field_connections as $connection ) {
@@ -171,7 +212,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	 *  Get module which we will use for send.
 	 *
 	 *  @since  0.1.0-alpha
-	 *  @param  [type]  $wplf_data [description]
+	 *  @param  [type] $wplf_data [description].
 	 *  @return [type]             [description]
 	 */
 	public static function get_module_for_send( $wplf_data = null ) {
@@ -187,8 +228,18 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			'post_type'   						=> 'crmservice_form',
 			'post_status' 						=> 'publish',
 			'posts_per_page'         	=> 1,
-			'meta_key'       					=> '_crmservice_form',
-			'meta_value_num' 					=> (int)$wplf_data->form_id,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $wplf_data->form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
 			'no_found_rows'          	=> true,
 			'cache_results'          	=> true,
 			'update_post_term_cache' 	=> false,
@@ -198,10 +249,37 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		$module = false;
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) { $query->the_post();
-				$module = get_post_meta( get_the_id(), '_crmservice_module', true );
+				$module = \get_post_meta( get_the_id(), '_crmservice_module', true );
 			}
 		}
 
 		return $module;
 	} // end get_module_for_send
+
+	public static function set_send_ok( $wplf_data = null ) {
+		if ( ! $wplf_data ) {
+			return false;
+		}
+
+		if ( ! $wplf_data->ok ) {
+			return false;
+		}
+
+		\update_post_meta( $wplf_data->submission_id, '_crmservice_send', date( 'Y-m-d H:i:s' ) );
+	} // end set_send_ok
+
+	public static function set_send_fail( $wplf_data = null ) {
+		if ( ! $wplf_data ) {
+			return false;
+		}
+
+		if ( ! $wplf_data->ok ) {
+			return false;
+		}
+
+		$fails = \get_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', true );
+		$fails[] = date( 'Y-m-d H:i:s' );
+
+		\update_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', $fails );
+	} // end set_send_fail
 } // end class FormsWPLibreForm

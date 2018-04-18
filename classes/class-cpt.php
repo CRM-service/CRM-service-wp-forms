@@ -5,12 +5,13 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-06 10:47:20
+ * @Last Modified time: 2018-04-18 11:40:34
  *
  * @package crmservice
  */
 
 namespace CRMServiceWP\CPT;
+
 use CRMServiceWP;
 use CRMServiceWP\Helper;
 
@@ -36,7 +37,7 @@ class CPT extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 0.1.0-alpha
 	 */
-	function __construct() {
+	public function __construct() {
 		// Get instance of helper.
 		self::$helper = new CRMServiceWP\Helper\Helper();
 
@@ -53,6 +54,11 @@ class CPT extends CRMServiceWP\Plugin {
 		\add_action( 'init', array( __CLASS__, 'register_cpt' ) );
 		\add_action( 'add_meta_boxes', array( __CLASS__, 'meta_boxes_register' ) );
 		\add_action( 'save_post', array( __CLASS__, 'meta_boxes_save' ) );
+
+    \add_filter( 'manage_edit-crmservice_form_columns', array( __CLASS__, 'custom_columns_cpt' ), 100, 1 );
+    \add_action( 'manage_crmservice_form_posts_custom_column', array( __CLASS__, 'custom_columns_display_cpt' ), 10, 2 );
+
+    \add_action( 'admin_notices', array( __CLASS__, 'maybe_show_admin_notices' ) );
 	} // end run
 
 	/**
@@ -115,7 +121,7 @@ class CPT extends CRMServiceWP\Plugin {
 	 *  Output integration settings meta box.
 	 *
 	 *  @since  0.1.0-alpha
-	 *  @param  int $post 		current post where metabox is shown
+	 *  @param  int $post 		current post where metabox is shown.
 	 */
 	public static function meta_boxes_display_integration_settings( $post ) {
 		// Set defaults.
@@ -135,74 +141,182 @@ class CPT extends CRMServiceWP\Plugin {
 			$new_form_url = \admin_url( $form_plugin['new_url'] );
 		}
 
-		$saved_form = get_post_meta( (int)$post->ID, '_crmservice_form', true );
-		$saved_module = get_post_meta( (int)$post->ID, '_crmservice_module', true );
+		$saved_form = get_post_meta( (int) $post->ID, '_crmservice_form', true );
+		$saved_module = get_post_meta( (int) $post->ID, '_crmservice_module', true );
 
 		if ( $saved_form && $saved_module ) {
-			$form_fields = CRMServiceWP\Forms\Common\FormsCommon::get_form_fields( (int)$saved_form );
+			$form_fields = CRMServiceWP\Forms\Common\FormsCommon::get_form_fields( (int) $saved_form );
 			$module_fields = CRMServiceWP\Forms\Common\FormsCommon::get_module_fields( $saved_module );
-			$saved_conections = get_post_meta( (int)$post->ID, '_crmservice_connections', true );
+			$saved_conections = get_post_meta( (int) $post->ID, '_crmservice_connections', true );
 		}
 
 		// Actually make the view.
 		include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/metabox-integration-settings.php' );
 	} // end meta_boxes_display_integration_settings
 
+	/**
+	 *  Handle saving of our CPT and it's metadata
+	 *
+	 *  @since  0.1.1-alpha
+	 *  @param  integer  $post_id post ID which is being saved.
+	 */
 	public static function meta_boxes_save( $post_id ) {
-		if ( ! isset( $_POST['crmservice_nonce'] ) ) {
-			return;
+		if ( isset( $_POST['post_type'] ) && 'crmservice_form' !== $_POST['post_type'] ) {
+			return; // bail if post type isn't ours.
 		}
 
-		if ( ! \wp_verify_nonce( $_POST['crmservice_nonce'], 'crmservice_integration_nonce' ) ) {
-			return;
+		if ( ! isset( $_POST['crmservice_nonce'] ) ) {
+			return; // bail if no nonce.
+		}
+
+		if ( ! \wp_verify_nonce( wp_unslash( $_POST['crmservice_nonce'] ), 'crmservice_integration_nonce' ) ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
+			return; // bail if invalid nonce.
 		}
 
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return;
+			return; // bail if is autosave.
 		}
 
 		if ( ! \current_user_can( 'edit_post', $post_id ) ) {
-			return;
+			return; // bail if user has no rights.
 		}
 
-		if ( isset( $_POST['post_type'] ) && 'crmservice_form' !== $_POST['post_type'] ) {
-			return;
+		// Save current form plugin configuration to meta.
+		if ( isset( $_POST['crmservice_form'] ) && \get_post_meta( $post_id, '_crmservice_form', true ) !== $_POST['crmservice_form'] ) {
+			\update_post_meta( $post_id, '_crmservice_form_plugin', self::$helper->get_form_plugin( true ) );
 		}
 
+		// Save selected form.
     if ( isset( $_POST['crmservice_form'] ) ) {
-			update_post_meta( $post_id, '_crmservice_form', $_POST['crmservice_form'] );
+			\update_post_meta( $post_id, '_crmservice_form', \sanitize_text_field( \wp_unslash( $_POST['crmservice_form'] ) ) );
 		}
 
+		// Save selected module.
 		$module = '';
 		if ( isset( $_POST['crmservice_module'] ) ) {
-			update_post_meta( $post_id, '_crmservice_module', $_POST['crmservice_module'] );
-			$module = $_POST['crmservice_module']; // for the title.
+			\update_post_meta( $post_id, '_crmservice_module', \sanitize_text_field( \wp_unslash( $_POST['crmservice_module'] ) ) );
 		}
 
+		// Save added field connections.
 		if ( isset( $_POST['crmservice_connections'] ) ) {
-			update_post_meta( $post_id, '_crmservice_connections', $_POST['crmservice_connections'] );
+			\update_post_meta( $post_id, '_crmservice_connections', \wp_unslash( $_POST['crmservice_connections'] ) );
 		}
 
-		if ( empty( get_the_title( $post_id ) ) && isset( $_POST['crmservice_form'] ) ) {
-			$forms = CRMServiceWP\Forms\Common\FormsCommon::get_forms_array();
-
-			$form = '';
-			if ( isset( $forms[ $_POST['crmservice_form'] ] ) ) {
-				$form = $forms[ $_POST['crmservice_form'] ];
-			}
-
-			$post_title = $form;
-
-			if ( $module ) {
-				$post_title .= " to {$module}";
-			}
-
-			wp_update_post( array(
-				'ID'					=> (int)$post_id,
-				'post_title'	=> $post_title,
+		// Set post title to random int if no title otherwise.
+		if ( empty( \get_the_title( $post_id ) ) ) {
+			\wp_update_post( array(
+				'ID'					=> (int) $post_id,
+				'post_title'	=> mt_rand( 100, 999 ),
 			) );
 		}
 	} // end meta_boxes_save
+
+	/**
+	 * Custom columns in edit.php for Forms.
+	 *
+	 * @since 0.1.1-alpha
+	 */
+  public static function custom_columns_cpt( $columns ) {
+		$new_columns = array(
+		'cb'					=> $columns['cb'],
+		'status'			=> '',
+		'title'				=> $columns['title'],
+		'form'				=> \__( 'Form', 'crmservice' ),
+		'module'			=> \__( 'Module', 'crmservice' ),
+		'date'				=> $columns['date'],
+		);
+
+		return $new_columns;
+  } // end custom_columns_cpt
+
+  /**
+   * Custom column display for Form CPT in edit.php.
+   *
+   * @since 0.1.1-alpha
+   */
+  public static function custom_columns_display_cpt( $column, $post_id ) {
+  	// Status column cotent.
+		if ( 'status' === $column ) {
+			// Defaults.
+			$status = 'ok';
+			$status_message = array();
+
+			// Get data for this integration.
+			$form_plugin = \get_post_meta( $post_id, '_crmservice_form_plugin', true );
+			$form = \get_post_meta( $post_id, '_crmservice_form', true );
+			$module = \get_post_meta( $post_id, '_crmservice_module', true );
+			$connections = \get_post_meta( $post_id, '_crmservice_connections', true );
+
+			// Check if there is more than one integrations for this form.
+			if ( ! empty( $form ) ) {
+				if ( 1 < CRMServiceWP\Forms\Common\FormsCommon::get_integration_count_for_form( $form ) ) {
+					$status = 'warn';
+					$status_message[] = \__( 'Many integrations', 'crmservice' );
+				}
+			}
+
+			// Check if form plugin is same than configured.
+			if ( $form_plugin !== self::$helper->get_form_plugin( true ) ) {
+				$status = 'error';
+				$status_message[] = \__( 'Different form plugin that is configured', 'crmservice' );
+			}
+
+			// Check that the integration is configured.
+			if ( empty( $form ) || empty( $module ) || empty( $connections ) ) {
+				$status = 'error';
+				$status_message[] = \__( 'Not configured', 'crmservice' );
+			}
+
+			// Select status message to show in indicator tooltip.
+			if ( empty( $status_message ) ) {
+				$status_message = \__( 'Working correctly', 'crmservice' );
+			} else {
+				$status_message = implode( ', ', $status_message );
+			}
+
+			// Show indicator and tooltip.
+			echo '<span class="status status-' . $status . '" title="' . $status_message . '"></span>';
+		}
+
+		// Form column content.
+		if ( 'form' === $column ) {
+			$form = \get_post_meta( $post_id, '_crmservice_form', true );
+			$forms = CRMServiceWP\Forms\Common\FormsCommon::get_forms_array();
+
+			if ( $form && isset( $forms[ $form ] ) ) {
+				echo $forms[ $form ];
+			}
+		}
+
+		// Module column content.
+		if ( 'module' === $column ) {
+			$module = \get_post_meta( $post_id, '_crmservice_module', true );
+
+			if ( $module ) {
+				echo $module;
+			}
+		}
+  } // end custom_columns_display_cpt
+
+	/**
+	 *  If integration uses different form plugin tha configured, show admin notice.
+	 *
+	 *  @since  0.1.1-alpha
+	 */
+	public static function maybe_show_admin_notices() {
+		$screen = \get_current_screen();
+
+		if ( 'post' === $screen->base && 'crmservice_form' === $screen->post_type && isset( $_GET['post'] ) ) {
+			$form_plugin = \get_post_meta( (int) \sanitize_text_field( \wp_unslash( $_GET['post'] ) ), '_crmservice_form_plugin', true );
+
+	    if ( $form_plugin !== self::$helper->get_form_plugin( true ) ) {
+				$classes = 'notice-warning';
+				$text_string = \wp_kses( 'This integration uses different form plugin that is configured to use.', 'crmservice' );
+
+				include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
+			}
+		}
+	} // end maybe_show_admin_notices
 } // end class CPT
 
 new CPT();
