@@ -17,7 +17,7 @@ class CRMserviceConnector {
   private $crm_apikey;
   private $crm_session;
   private $crm_managers = [];
-  private $enabled_modules = ['Leads', 'Potentials', 'Contacts'];
+  private $enabled_modules = ['Leads', 'Potentials'];
   private $enabled_uitypes = [1 => 'String', 2 => 'String', 5 => 'Date', 7 => 'Number', 9 => 'Percent', 11 => 'Phone', 13 => 'Email', 15 => 'Select', 16 => 'Select', 17 => 'Website', 19 => 'String', 20 => 'String', 21 => 'String', 22 => 'String', 24 => 'Address', 33 => 'MultiSelect', 56 => 'Checkbox', 63 => 'Time', 792 => 'DateTime',];
 
   public function __construct(string $url, string $api_key) {
@@ -38,6 +38,10 @@ class CRMserviceConnector {
     }
 
     $this->crm_session = $this->manager('session')->createSession($this->crm_apikey);
+
+    if ( is_soap_fault( $this->crm_session ) ) {
+      throw new CRMserviceConnectorException('CRMserviceConnector has SoapFault');
+    }
   }
 
   public function __destruct() {
@@ -216,6 +220,8 @@ class CrmSoapClient extends \SoapClient {
     if(isset($options['headers'])) {
       $this->__setSoapHeaders($options['headers']);
     }
+
+    $options['exceptions'] = false;
 
     parent::__construct($wsdl, $options);
   }

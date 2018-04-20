@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:32:52
+ * @Last Modified time: 2018-04-20 11:20:41
  *
  * @package crmservice
  */
@@ -60,7 +60,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 
 		// Get form plugin selected and load it's integration class.
 		self::$form_plugin = self::$helper->get_form_plugin();
-		if ( self::$form_plugin ) {
+		if ( self::$form_plugin && self::$helper->check_if_form_plugin_active() ) {
 			$load_slug = self::$form_plugin['slug'];
 			include_once CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
 

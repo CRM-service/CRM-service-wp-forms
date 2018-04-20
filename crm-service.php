@@ -11,7 +11,7 @@
  * Author URI:				https://www.dude.fi
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl.html
- * Version: 					0.1.1-alpha
+ * Version: 					1.0.0-beta
  * Requires at least:	4.9.4
  * Tested up to: 			4.9.4
  *
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:20:39
+ * @Last Modified time: 2018-04-20 11:23:30
  */
 
 namespace CRMServiceWP;
@@ -140,20 +140,35 @@ if ( ! class_exists( 'Plugin' ) ) :
 				\add_action( 'admin_notices', array( __CLASS__, 'notice_soap_support' ) );
 			}
 
+			// Maybe show onboarding process.
+			if ( current_user_can( 'manage_options' ) && ! self::$helper->check_api_settings_existance() ) {
+				add_action( 'admin_notices', array( __CLASS__, 'maybe_show_onboarding' ) );
+				return;
+			}
+
 			// Maybe show API connectivity issue warning.
 			if ( \current_user_can( 'edit_posts' ) && ! self::$helper->check_api_credentials_health() ) {
 				\add_action( 'admin_notices', array( __CLASS__, 'notice_no_api_connection' ) );
+			}
+
+			// Maybe show selected form plugin not active warning
+			if ( \current_user_can( 'manage_options' ) && ! self::$helper->check_if_form_plugin_active() ) {
+				\add_action( 'admin_notices', array( __CLASS__, 'notice_form_plugin_not_active' ) );
 			}
 
 			// Maybe show form plugin setting missing warning.
 			if ( \current_user_can( 'manage_options' ) && ! self::$helper->get_form_plugin() ) {
 				\add_action( 'admin_notices', array( __CLASS__, 'notice_form_plugin_not_configured' ) );
 			}
-
-			if ( \current_user_can( 'manage_options' ) && ! self::$helper->check_if_form_plugin_active() ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_form_plugin_not_active' ) );
-			}
 		} // end maybe_show_admin_notices
+
+		public static function maybe_show_onboarding() {
+			$screen = get_current_screen();
+
+			if ( 'crmservice_form_page_crmservice' !== $screen->id ) {
+				include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/onboarding.php' );
+			}
+		} // end maybe_show_onboarding
 
 		/**
 		 *  Show warnings from url parameter.

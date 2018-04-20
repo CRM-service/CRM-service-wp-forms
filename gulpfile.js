@@ -120,6 +120,7 @@ gulp.task('js', function() {
       gulp.src(
         [
           'node_modules/tippy.js/dist/tippy.all.js',
+          'node_modules/selectize.js/dist/js/standalone/selectize.js',
           src + '/js/metabox.js'
         ])
         .pipe(concat('metabox.js'))

@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 10:50:18
+ * @Last Modified time: 2018-04-18 14:51:11
  *
  * @package crmservice
  */
@@ -92,6 +92,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			return;
 		}
 
+		// Get form fields array, WPLF stores those in one string.
 		$fields = \get_post_meta( $form_id, '_wplf_fields', true );
 		$fields = explode( ',', $fields );
 
@@ -101,6 +102,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			unset( $fields[ $field_key ] );
 		}
 
+		// Get required fields.
 		$required_fields = \get_post_meta( $form_id, '_wplf_required', true );
 
 		return array(
@@ -109,6 +111,13 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		);
 	} // end get_fields
 
+	/**
+	 *  Get integration count for forms.
+	 *
+	 *  @since  0.1.1-alpha
+	 *  @param  integer $form_id form ID to count integrations
+	 *  @return integer          count of integrations
+	 */
 	public function get_integration_count_for_form( $form_id = null ) {
 		if ( ! $form_id ) {
 			return false;
@@ -143,20 +152,22 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	 *  Map submission data to selected fields for sending to CRM.
 	 *
 	 *  @since  0.1.0-alpha
-	 *  @param  object $wplf_data WPLF submiddion data.
-	 *  @return mixed              array with mapped data or false
+	 *  @param  object $wplf_data WPLF submission data.
+	 *  @return mixed             array with mapped data or false
 	 */
 	public static function map_fields_for_send( $wplf_data = null ) {
 		if ( ! $wplf_data ) {
-			return false;
+			return false; // no wplf data for some reason, bail.
 		}
 
 		if ( ! $wplf_data->ok ) {
-			return false;
+			return false; // wplf send was not ok so we don't want to send either, bail.
 		}
 
+		// Get submission ID for getting submission fields.
 		$submission_id = $wplf_data->submission_id;
 
+		// Get integration connections.
 		$query = new \WP_Query( array(
 			'post_type'   						=> 'crmservice_form',
 			'post_status' 						=> 'publish',
@@ -190,18 +201,21 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			return false; // no connections, bail.
 		}
 
+		// Get submission meta.
 		$submission_meta = \get_post_meta( (int) $submission_id );
 		$send = array();
 
+		// Loop connections and connect the fieds.
 		foreach ( $form_field_connections as $connection ) {
 			if ( ! isset( $connection['module_field'] ) ) {
-				continue;
+				continue; // no module field spesified, continue to next field.
 			}
 
 			if ( ! isset( $submission_meta[ $connection['form_field'] ] ) ) {
-				continue;
+				continue; // form field does not exist in submission, continue to next field.
 			}
 
+			// Connect fields.
 			$send[ $connection['module_field'] ] = $submission_meta[ $connection['form_field'] ][0];
 		}
 
@@ -212,18 +226,19 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	 *  Get module which we will use for send.
 	 *
 	 *  @since  0.1.0-alpha
-	 *  @param  [type] $wplf_data [description].
-	 *  @return [type]             [description]
+	 *  @param  object $wplf_data WPLF submission data.
+	 *  @return mixed             module name for send, false if not configured.
 	 */
 	public static function get_module_for_send( $wplf_data = null ) {
 		if ( ! $wplf_data ) {
-			return false;
+			return false; // no wplf data for some reason, bail.
 		}
 
 		if ( ! $wplf_data->ok ) {
-			return false;
+			return false; // wplf send was not ok so we don't want to send either, bail.
 		}
 
+		// Get module.
 		$query = new \WP_Query( array(
 			'post_type'   						=> 'crmservice_form',
 			'post_status' 						=> 'publish',
@@ -256,27 +271,40 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		return $module;
 	} // end get_module_for_send
 
+	/**
+	 *  Set timestamp of succesfull crm send.
+	 *
+	 *  @since 0.1.1-alpha
+	 *  @param object $wplf_data WPLF submission data.
+	 */
 	public static function set_send_ok( $wplf_data = null ) {
 		if ( ! $wplf_data ) {
-			return false;
+			return false; // no wplf data for some reason, bail.
 		}
 
 		if ( ! $wplf_data->ok ) {
-			return false;
+			return false; // wplf send was not ok so we don't want to send either, bail.
 		}
 
 		\update_post_meta( $wplf_data->submission_id, '_crmservice_send', date( 'Y-m-d H:i:s' ) );
 	} // end set_send_ok
 
+	/**
+	 *  Save timestamp of failed crm send.
+	 *
+	 *  @since 0.1.1-alpha
+	 *  @param object $wplf_data WPLF submission data.
+	 */
 	public static function set_send_fail( $wplf_data = null ) {
 		if ( ! $wplf_data ) {
-			return false;
+			return false; // no wplf data for some reason, bail.
 		}
 
 		if ( ! $wplf_data->ok ) {
-			return false;
+			return false; // wplf send was not ok so we don't want to send either, bail.
 		}
 
+		// Get old fails if one.
 		$fails = \get_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', true );
 		$fails[] = date( 'Y-m-d H:i:s' );
 

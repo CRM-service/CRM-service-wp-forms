@@ -34,6 +34,7 @@
     "typographic": "^3.0.0"
   },
   "dependencies": {
+    "selectize.js": "^0.12.12",
     "tippy.js": "^2.5.2"
   }
 }

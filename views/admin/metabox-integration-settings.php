@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 14:10:28
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:24:56
+ * @Last Modified time: 2018-04-18 16:18:50
  *
  * @package crmservice
  */
@@ -92,18 +92,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<input type="hidden" name="crmservice_connections[<?php echo $connection_id; ?>][form_field]" value="<?php echo $connection['form_field']; ?>" />
 				</div>
 				<div class="col col-module">
-					<select name="crmservice_connections[<?php echo $connection_id; ?>][module_field]">
-						<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+					<?php if ( ! empty( $module_fields ) ) : ?>
+						<select name="crmservice_connections[<?php echo $connection_id; ?>][module_field]">
+							<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 
-						<?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
-							<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" <?php if ( isset( $connection['module_field'] ) && $connection['module_field'] === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
-						<?php endforeach; ?>
-					</select>
-					<input type="hidden" name="crmservice_connections[<?php echo $connection_id; ?>][module_field]" value="<?php if ( isset( $connection['module_field'] ) ) { echo $connection['module_field']; } ?>" />
+							<?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
+								<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" <?php if ( isset( $connection['module_field'] ) && $connection['module_field'] === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
+							<?php endforeach; ?>
+						</select>
+						<input type="hidden" name="crmservice_connections[<?php echo $connection_id; ?>][module_field]" value="<?php if ( isset( $connection['module_field'] ) ) { echo $connection['module_field']; } ?>" />
 
-					<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+						<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+					<?php endif; ?>
 				</div>
 			</div>
-		<?php endforeach; ?>
+			<?php endforeach; ?>
 	<?php endif; ?>
 </div>

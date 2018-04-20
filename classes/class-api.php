@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:42:13
+ * @Last Modified time: 2018-04-18 15:36:30
  *
  * @package crmservice
  */
@@ -71,22 +71,15 @@ class API extends CRMServiceWP\Plugin {
 	} // end load_connector
 
 	/**
-	 *  TODO: remove this.
-	 */
-	public static function check_credentials_health() {
-		return true;
-	} // end check_credentials_health
-
-	/**
 	 *  Call CRM SOAP API.
 	 *
 	 *  @since  0.1.1-alpha
-	 *  @param  string  $endpoint       [description]
-	 *  @param  [type]  $data           [description]
-	 *  @param  boolean $cache          [description]
-	 *  @param  integer $cache_lifetime [description]
-	 *  @param  string  $method         [description]
-	 *  @return [type]                  [description]
+	 *  @param  string  $endpoint       what endpoint to call.
+	 *  @param  mixed   $data           data to send.
+	 *  @param  boolean $cache          if true, cache response.
+	 *  @param  integer $cache_lifetime modify cache lifetime in seconds, default is 900 = 15 minutes.
+	 *  @param  string  $method         request method.
+	 *  @return mixed                   false if request not valid, otherwise response form cache or API
 	 */
 	public static function call_api( $endpoint = 'getmodules', $data = null, $cache = true, $cache_lifetime = 900, $method = 'GET' ) {
 		// Defaults.
@@ -148,10 +141,10 @@ class API extends CRMServiceWP\Plugin {
 	 *  Get cached API response data.
 	 *
 	 *  @since  0.1.1-alpha
-	 *  @param  [type]  $cache_key [description]
-	 *  @return [type]             [description]
+	 *  @param  string  $cache_key what is cache key to get data for.
+	 *  @return  mixed             cached data, false if no cached data
 	 */
-	private static function get_api_response_cache( $cache_key ) {
+	private static function get_api_response_cache( $cache_key = '' ) {
 		return get_transient( 'crmservice_api_response_' . md5( $cache_key ) );
 	} // end get_api_response_cache
 

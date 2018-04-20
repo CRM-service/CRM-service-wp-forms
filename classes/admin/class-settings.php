@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-17 15:44:07
+ * @Last Modified time: 2018-04-18 14:55:58
  *
  * @package crmservice
  */
@@ -65,7 +65,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Add link to settings on plugin list
 	 *
-	 *  @since 0.0.1-alpha
+	 *  @since 0.1.0-alpha
 	 *  @param array $links links to show below plugin name.
 	 */
 	public static function add_settings_link_to_plugin_list( $links ) {
@@ -79,7 +79,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Add our page to admin menu
 	 *
-	 *  @since 0.0.1-alpha
+	 *  @since 0.1.0-alpha
 	 */
 	public static function add_menu_page() {
 		\add_submenu_page(
@@ -95,7 +95,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Output the settings page
 	 *
-	 *  @since  0.0.1-alpha
+	 *  @since  0.1.0-alpha
 	 */
 	public static function page_output() {
 		self::maybe_send_bugreport();
@@ -105,7 +105,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Register setting sections and fields
 	 *
-	 *  @since 0.0.1-alpha
+	 *  @since 0.1.0-alpha
 	 */
 	public static function add_setting_sections_and_fields() {
 		// Add empty options with autoload false for performace reasons.
@@ -157,9 +157,10 @@ class Settings extends CRMServiceWP\Plugin {
 	} // end add_setting_sections_and_fields
 
 	/**
-	 *  So, there's really no good reason to document all these field callbacks
+	 *  So, there's really no good reason to document all these field callbacks.
+	 *
+	 *  phpcs:disable
 	 */
-	// phpcs:disable
 	public static function section_callback_api() {
 		return;
 	} // end section_callback_api
@@ -211,8 +212,13 @@ class Settings extends CRMServiceWP\Plugin {
 
 		return $value;
 	} // end function sanitize_callback_api_baseurl_scheme
-	// // phpcs:enable
+	// phpcs:enable
 
+	/**
+	 *  Check if url parameter and nonce says that we need to purge plugin cache.
+	 *
+	 *  @since  0.1.1-alpha
+	 */
 	public static function maybe_clear_cache() {
 		if ( isset( $_GET['crmservice_purgecache'] ) && \current_user_can( 'manage_options' ) ) {
 			if ( \wp_verify_nonce( wp_unslash( $_GET['crmservice_nonce'] ), 'crmservice_purgecache' ) ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
@@ -226,6 +232,11 @@ class Settings extends CRMServiceWP\Plugin {
 		}
 	} // end maybe_do_reset
 
+	/**
+	 *  Check if url parameter and nonce says that we need to reset whole plugin.
+	 *
+	 *  @since  0.1.1-alpha
+	 */
 	public static function maybe_do_reset() {
 		if ( isset( $_GET['crmservice_reset'] ) && \current_user_can( 'manage_options' ) ) {
 			if ( \wp_verify_nonce( wp_unslash( $_GET['crmservice_nonce'] ), 'crmservice_reset' ) ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
@@ -239,6 +250,11 @@ class Settings extends CRMServiceWP\Plugin {
 		}
 	} // end maybe_do_reset
 
+	/**
+	 *  Do the bug report send.
+	 *
+	 *  @since  0.1.1-alpha
+	 */
 	public static function maybe_send_bugreport() {
 		if ( \current_user_can( 'manage_options' ) && isset( $_POST['crmservice-sendbugreport'] ) ) :
 			if ( isset( $_POST['crmservice_bugreport_send'] ) && \wp_verify_nonce( wp_unslash( $_POST['crmservice_bugreport_send'] ), 'crmservice_bugreport' ) ) : // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized

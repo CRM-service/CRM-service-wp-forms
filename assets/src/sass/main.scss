@@ -2,10 +2,11 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-05 16:24:26
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-17 13:22:06
+* @Last Modified time: 2018-04-18 16:56:01
 */
 
 @import 'jeet/scss/index';
+@import 'selectize.js/dist/css/selectize';
 
 ul#adminmenu {
 	li#menu-posts-crmservice_form {
@@ -86,6 +87,12 @@ ul#adminmenu {
 }
 
 .crmservice-settings {
+	svg {
+		path.green-part {
+    	fill: #3fc92a;
+    }
+	}
+
 	p {
 		&.clear-cache {
 			margin-top: -10px;
@@ -132,4 +139,128 @@ body.post-type-crmservice_form {
 			}
 		}
 	}
+}
+
+.crmservice-onboarding,
+.notice.crmservice-onboarding,
+.notice.crmservice-onboarding.is-dismissible {
+  margin-top: 10px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  display: block;
+  overflow: hidden;
+
+  .top-bar {
+    background: #3fc92a;
+    overflow: hidden;
+    height: 70px;
+    width: 100%;
+    display: block;
+
+    p {
+      font-size: 17px;
+      top: 14px;
+      position: relative;
+      color: #fff;
+
+      @media(max-width: 1400px) {
+        font-size: 15px;
+      }
+    }
+
+    svg {
+      float: left;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      margin-left: 30px;
+      margin-right: 30px;
+
+      path, g {
+      	fill: #fff;
+      }
+    }
+  }
+
+  .steps {
+    overflow: hidden;
+
+    .step {
+      padding-top: 30px;
+      padding-left: 30px;
+      padding-right: 30px;
+      padding-bottom: 10px;
+      display: block;
+      overflow: hidden;
+
+      .icon {
+        @include span(1/5);
+
+        svg {
+          width: 75%;
+          height: auto;
+          max-height: 44px;
+
+          * {
+		      	fill: #3fc92a;
+		      }
+        }
+      }
+
+      .content {
+        @include span(4/5);
+      }
+
+      h3 {
+        margin-top: 0;
+      }
+
+      a.button {
+        background: transparent;
+        box-shadow: none;
+        padding: 7px 20px;
+        border: 2px solid #3fc92a;
+        height: auto;
+        color: #3fc92a;
+        border-radius: 30px;
+        margin-top: 10px;
+        font-weight: 700;
+
+        &:hover {
+          background: #3fc92a;
+          color: #fff;
+        }
+      }
+    }
+
+    ol {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+
+      li {
+        @include span(1/3);
+        counter-increment: stepnumbers;
+        padding: 0;
+        list-style: none;
+        overflow: hidden;
+
+        @media(max-width: 1100px) {
+          @include stack();
+        }
+
+        h3 {
+          &:before {
+            content: counter(stepnumbers) '. ';
+            font-weight: bold;
+            color: #3fc92a;
+          }
+        }
+      }
+    }
+  }
 }

@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-04 16:36:49
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-17 10:38:19
+* @Last Modified time: 2018-04-18 16:28:39
 */
 
 jQuery( document ).ready(function( $ ) {
@@ -14,6 +14,11 @@ jQuery( document ).ready(function( $ ) {
   	size: 'small',
   	placement: 'top-start'
 	});
+
+	// Selectize options
+	// $('select[name="crmservice_module"]').selectize();
+	// $('select[name="crmservice_form"]').selectize();
+	// $('.crmservice-metabox-connections-wrap .row-field .col-module select').selectize();
 
 	// Defaults.
 	var form_fields = [];
@@ -49,7 +54,6 @@ jQuery( document ).ready(function( $ ) {
 	$(document).on('change', 'select[name="crmservice_form"]', function() {
 	  $('.crmservice-metabox-connections-wrap .row-field:not(.row-field-base)').remove();
 
-	  console.log( this.value );
 	  $.ajax({
 			type: 'GET',
 			dataType: 'json',
@@ -69,7 +73,6 @@ jQuery( document ).ready(function( $ ) {
 	$(document).on('change', 'select[name="crmservice_module"]', function() {
 		$('.crmservice-metabox-connections-wrap .col-module select').empty().append('<option>Select</option>');
 
-		console.log( this.value );
 		$.ajax({
 		   type: 'GET',
 		   dataType: 'json',
@@ -116,7 +119,6 @@ jQuery( document ).ready(function( $ ) {
 
 	// Make form field rows.
 	function populate_form_fields() {
-		console.log( form_fields );
 
 		x = 0;
 		$.each( form_fields, function(i, item) {
@@ -137,7 +139,6 @@ jQuery( document ).ready(function( $ ) {
 
 	// Set module field select options.
 	function populate_module_fields() {
-		console.log( module_fields );
 
 		$.each( module_fields, function(i, item) {
 	    $('.crmservice-metabox-connections-wrap .col-module select').append( $('<option>', {

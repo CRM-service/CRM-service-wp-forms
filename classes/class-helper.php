@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:28:19
+ * @Last Modified time: 2018-04-20 10:43:32
  *
  * @package crmservice
  */
@@ -107,6 +107,7 @@ class Helper extends CRMServiceWP\Plugin {
 				'dirfile'				=> 'wp-libre-form/wp-libre-form.php',
 				'new_url'				=> 'edit.php?post_type=wplf-form',
 				'submit_hook'		=> 'wplf_post_validate_submission',
+				'plugin_url'		=> '',
 			),
 		);
 
@@ -245,8 +246,26 @@ class Helper extends CRMServiceWP\Plugin {
 	 */
 	public static function reset() {
 		self::purge_cache();
+
 		\delete_option( 'crmservice_api_baseurl' );
 		\delete_option( 'crmservice_api_key' );
 		\delete_option( 'crmservice_form_plugin' );
+
+		$query = new \WP_Query( array(
+			'post_type'   => 'crmservice_form',
+			'post_status' => 'any',
+			'posts_per_page'         => -1,
+			'no_found_rows'          => true,
+			'cache_results'          => true,
+			'update_post_term_cache' => false,
+			'update_post_meta_cache' => false,
+		) );
+
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				\wp_delete_post( \get_the_id(), true );
+			}
+		}
 	} // end reset
 } // end class Helper

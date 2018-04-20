@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 11:40:34
+ * @Last Modified time: 2018-04-20 11:14:44
  *
  * @package crmservice
  */
@@ -58,6 +58,7 @@ class CPT extends CRMServiceWP\Plugin {
     \add_filter( 'manage_edit-crmservice_form_columns', array( __CLASS__, 'custom_columns_cpt' ), 100, 1 );
     \add_action( 'manage_crmservice_form_posts_custom_column', array( __CLASS__, 'custom_columns_display_cpt' ), 10, 2 );
 
+    \add_action( 'current_screen', array( __CLASS__, 'maybe_disable_adding_new' ) );
     \add_action( 'admin_notices', array( __CLASS__, 'maybe_show_admin_notices' ) );
 	} // end run
 
@@ -297,6 +298,18 @@ class CPT extends CRMServiceWP\Plugin {
 			}
 		}
   } // end custom_columns_display_cpt
+
+  /**
+   *  Disable adding new integration if form plugin not configured.
+   *
+   *  @since  0.1.1.-alpha
+   */
+  public static function maybe_disable_adding_new() {
+  	$screen = \get_current_screen();
+  	if ( 'add' === $screen->action && 'crmservice_form' === $screen->post_type && ! self::$helper->get_form_plugin() ) {
+  		wp_safe_redirect( self::$helper->get_plugin_page_url() );
+  	}
+  } // end maybe_disable_adding_new
 
 	/**
 	 *  If integration uses different form plugin tha configured, show admin notice.
