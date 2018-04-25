@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-20 11:20:41
+ * @Last Modified time: 2018-04-25 14:55:05
  *
  * @package crmservice
  */
@@ -62,13 +62,17 @@ class FormsCommon extends CRMServiceWP\Plugin {
 		self::$form_plugin = self::$helper->get_form_plugin();
 		if ( self::$form_plugin && self::$helper->check_if_form_plugin_active() ) {
 			$load_slug = self::$form_plugin['slug'];
-			include_once CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
+			$file_path = CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
 
-			// Load instance for form spesific plugin.
-			self::$form_plugin_instance = new CRMServiceWP\Forms\WPLibreForm\FormsWPLibreForm();
+			if ( file_exists( $file_path ) ) {
+				include_once CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
 
-			// Hook to submit.
-			\add_action( self::$form_plugin['submit_hook'], array( __CLASS__, 'send_form_submission' ), 50, 4 );
+				// Load instance for form spesific plugin.
+				self::$form_plugin_instance = new self::$form_plugin['class'];
+
+				// Hook to submit.
+				\add_action( self::$form_plugin['submit_hook'], array( __CLASS__, 'send_form_submission' ), 50, 4 );
+			}
 		}
 	} // end __construct
 
@@ -180,7 +184,33 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	} // end get_form_fields_rest
 
 	public static function get_integration_count_for_form( $form_id = null ) {
-		return self::$form_plugin_instance->get_integration_count_for_form( $form_id );
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$query = new \WP_Query( array(
+			'post_type'   						=> 'crmservice_form',
+			'post_status' 						=> 'publish',
+			'posts_per_page'         	=> 1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
+			'no_found_rows'          	=> false,
+			'cache_results'          	=> true,
+			'update_post_term_cache' 	=> false,
+			'update_post_meta_cache' 	=> true,
+		) );
+
+		return $query->found_posts;
 	} // end get_integration_count_for_form
 
 	/**
@@ -234,8 +264,95 @@ class FormsCommon extends CRMServiceWP\Plugin {
 		return $value;
 	} // end maybe_format_field_data_for_crm
 
+	public static function get_module_for_send( $form_id = 0 ) {
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$query = new \WP_Query( array(
+			'post_type'   						=> 'crmservice_form',
+			'post_status' 						=> 'publish',
+			'posts_per_page'         	=> 1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
+			'no_found_rows'          	=> true,
+			'cache_results'          	=> true,
+			'update_post_term_cache' 	=> false,
+			'update_post_meta_cache' 	=> true,
+		) );
+
+		$module = false;
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) { $query->the_post();
+				$module = \get_post_meta( get_the_id(), '_crmservice_module', true );
+			}
+		}
+
+		return $module;
+	} // end get_module_for_send
+
+	public static function get_integration_field_connections( $form_id = 0 ) {
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$query = new \WP_Query( array(
+			'post_type'   						=> 'crmservice_form',
+			'post_status' 						=> 'publish',
+			'posts_per_page'         	=> 1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
+			'no_found_rows'          	=> true,
+			'cache_results'          	=> true,
+			'update_post_term_cache' 	=> false,
+			'update_post_meta_cache' 	=> true,
+		) );
+
+		$form_field_connections = false;
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) { $query->the_post();
+				$form_field_connections = \get_post_meta( get_the_id(), '_crmservice_connections', true );
+			}
+		}
+
+		return $form_field_connections;
+	} // end get_integration_field_connections
+
 	/**
 	 *  Send form submission to crm.
+	 *
+	 *  Vars per form plugin:
+	 *
+	 *  WP Libre From, see https://github.com/libreform/wp-libre-form/blob/master/inc/wplf-ajax.php#L95
+	 *  var1 is object containing all submission data
+	 *
+	 *  Gravity Forms, see https://docs.gravityforms.com/gform_after_submission/
+	 *  var1 is object containing submission entry
+	 *  var2 is current form
+	 *
+	 *  Contact Form 7, see https://plugins.svn.wordpress.org/contact-form-7/trunk/modules/flamingo.php
+	 *  var1 is object of contact form
+	 *  var2 is array result of send
 	 *
 	 *  @since  0.1.1-alpha
 	 *  @param  mixed  $var1 variable from form plugin hook.
@@ -246,8 +363,8 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 */
 	public static function send_form_submission( $var1 = null, $var2 = null, $var3 = null, $var4 = null ) {
 		$bail = false;
-		$send_data = self::$form_plugin_instance->map_fields_for_send( $var1 );
-		$send_module = self::$form_plugin_instance->get_module_for_send( $var1 );
+		$send_data = self::$form_plugin_instance->map_fields_for_send( $var1, $var2 );
+		$send_module = self::$form_plugin_instance->get_module_for_send( $var1, $var2 );
 
 		if ( ! $send_data ) {
 			$bail = true; // bail because no data, but true for form OK.

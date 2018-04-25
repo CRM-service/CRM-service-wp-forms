@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 14:51:11
+ * @Last Modified time: 2018-04-24 12:21:30
  *
  * @package crmservice
  */
@@ -112,43 +112,6 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	} // end get_fields
 
 	/**
-	 *  Get integration count for forms.
-	 *
-	 *  @since  0.1.1-alpha
-	 *  @param  integer $form_id form ID to count integrations
-	 *  @return integer          count of integrations
-	 */
-	public function get_integration_count_for_form( $form_id = null ) {
-		if ( ! $form_id ) {
-			return false;
-		}
-
-		$query = new \WP_Query( array(
-			'post_type'   						=> 'crmservice_form',
-			'post_status' 						=> 'publish',
-			'posts_per_page'         	=> 1,
-			'meta_query'							=> array(
-				'relation'	=> 'AND',
-				array(
-					'key'		=> '_crmservice_form',
-					'value'	=> $form_id,
-				),
-				array(
-					'key'			=> '_crmservice_module',
-					'value'		=> '0',
-					'compare'	=> '!=',
-				),
-			),
-			'no_found_rows'          	=> false,
-			'cache_results'          	=> true,
-			'update_post_term_cache' 	=> false,
-			'update_post_meta_cache' 	=> true,
-		) );
-
-		return $query->found_posts;
-	} // end get_integration_count_for_form
-
-	/**
 	 *  Map submission data to selected fields for sending to CRM.
 	 *
 	 *  @since  0.1.0-alpha
@@ -168,34 +131,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		$submission_id = $wplf_data->submission_id;
 
 		// Get integration connections.
-		$query = new \WP_Query( array(
-			'post_type'   						=> 'crmservice_form',
-			'post_status' 						=> 'publish',
-			'posts_per_page'         	=> 1,
-			'meta_query'							=> array(
-				'relation'	=> 'AND',
-				array(
-					'key'		=> '_crmservice_form',
-					'value'	=> $wplf_data->form_id,
-				),
-				array(
-					'key'			=> '_crmservice_module',
-					'value'		=> '0',
-					'compare'	=> '!=',
-				),
-			),
-			'no_found_rows'          	=> true,
-			'cache_results'          	=> true,
-			'update_post_term_cache' 	=> false,
-			'update_post_meta_cache' 	=> true,
-		) );
-
-		$form_field_connections = false;
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) { $query->the_post();
-				$form_field_connections = \get_post_meta( get_the_id(), '_crmservice_connections', true );
-			}
-		}
+		$form_field_connections = CRMServiceWP\Forms\Common\FormsCommon::get_integration_field_connections( $wplf_data->form_id );
 
 		if ( ! $form_field_connections ) {
 			return false; // no connections, bail.
@@ -238,37 +174,8 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 			return false; // wplf send was not ok so we don't want to send either, bail.
 		}
 
-		// Get module.
-		$query = new \WP_Query( array(
-			'post_type'   						=> 'crmservice_form',
-			'post_status' 						=> 'publish',
-			'posts_per_page'         	=> 1,
-			'meta_query'							=> array(
-				'relation'	=> 'AND',
-				array(
-					'key'		=> '_crmservice_form',
-					'value'	=> $wplf_data->form_id,
-				),
-				array(
-					'key'			=> '_crmservice_module',
-					'value'		=> '0',
-					'compare'	=> '!=',
-				),
-			),
-			'no_found_rows'          	=> true,
-			'cache_results'          	=> true,
-			'update_post_term_cache' 	=> false,
-			'update_post_meta_cache' 	=> true,
-		) );
-
-		$module = false;
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) { $query->the_post();
-				$module = \get_post_meta( get_the_id(), '_crmservice_module', true );
-			}
-		}
-
-		return $module;
+		// Get and return module.
+		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $wplf_data->form_id );
 	} // end get_module_for_send
 
 	/**

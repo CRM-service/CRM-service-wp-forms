@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-20 10:43:32
+ * @Last Modified time: 2018-04-25 14:58:15
  *
  * @package crmservice
  */
@@ -108,6 +108,27 @@ class Helper extends CRMServiceWP\Plugin {
 				'new_url'				=> 'edit.php?post_type=wplf-form',
 				'submit_hook'		=> 'wplf_post_validate_submission',
 				'plugin_url'		=> '',
+				'class'					=> 'CRMServiceWP\Forms\WPLibreForm\FormsWPLibreForm',
+			),
+			'gravityforms'	=> array(
+				'active'				=> false,
+				'name'					=> 'Gravity Forms',
+				'slug'					=> 'gravityforms',
+				'dirfile'				=> 'gravityforms/gravityforms.php',
+				'new_url'				=> 'admin.php?page=gf_edit_forms',
+				'submit_hook'		=> 'gform_after_submission',
+				'plugin_url'		=> 'https://www.gravityforms.com/',
+				'class'					=> 'CRMServiceWP\Forms\GravityForms\FormsGravityForms',
+			),
+			'contact-form-7'	=> array(
+				'active'				=> false,
+				'name'					=> 'Contact Form 7',
+				'slug'					=> 'contact-form-7',
+				'dirfile'				=> 'contact-form-7/wp-contact-form-7.php',
+				'new_url'				=> 'admin.php?page=wpcf7',
+				'submit_hook'		=> 'wpcf7_submit',
+				'plugin_url'		=> 'https://wordpress.org/plugins/contact-form-7/',
+				'class'					=> 'CRMServiceWP\Forms\ContactForm7\FormsContactForm7',
 			),
 		);
 
@@ -268,4 +289,14 @@ class Helper extends CRMServiceWP\Plugin {
 			}
 		}
 	} // end reset
+
+	public function get_site_locale() {
+		$locale = \get_locale();
+
+		if ( 'fi' === $locale ) {
+			$locale = 'fi_fi';
+		}
+
+		return $locale;
+	} // end get_site_locale
 } // end class Helper

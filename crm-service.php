@@ -11,7 +11,7 @@
  * Author URI:				https://www.dude.fi
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl.html
- * Version: 					1.0.0-beta
+ * Version: 					1.1.0-beta
  * Requires at least:	4.9.4
  * Tested up to: 			4.9.4
  *
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-20 11:23:30
+ * @Last Modified time: 2018-04-25 15:03:06
  */
 
 namespace CRMServiceWP;

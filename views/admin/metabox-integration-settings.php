@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 14:10:28
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 16:18:50
+ * @Last Modified time: 2018-04-24 12:33:39
  *
  * @package crmservice
  */
@@ -85,7 +85,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<?php if ( ! empty( $saved_conections ) ) :
-		foreach ( $saved_conections as $connection_id => $connection ) : ?>
+		foreach ( $saved_conections as $connection_id => $connection ) :
+			if ( ! isset( $form_fields['fields'][ $connection['form_field'] ] ) ) {
+				continue;
+			} ?>
+
 			<div id="form-row-<?php echo $connection_id; ?>" class="row row-field">
 				<div class="col col-form">
 					<p><?php echo $form_fields['fields'][ $connection['form_field'] ]; ?></p>

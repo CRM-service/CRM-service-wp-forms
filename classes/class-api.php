@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 15:36:30
+ * @Last Modified time: 2018-04-25 14:58:51
  *
  * @package crmservice
  */
@@ -124,7 +124,7 @@ class API extends CRMServiceWP\Plugin {
 		if ( 'savedata' === $endpoint ) {
 			$data = $api->saveData( $data['module'], $data['data'] );
 		} else if ( 'getfields' === $endpoint ) {
-			$data = $api->getFieldsFor( $data, 'fi_fi' );
+			$data = $api->getFieldsFor( $data, self::$helper->get_site_locale() );
 		} else {
 			$data = $api->getModules();
 		}
