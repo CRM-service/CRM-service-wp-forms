@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 14:58:51
+ * @Last Modified time: 2018-04-25 16:10:31
  *
  * @package crmservice
  */
@@ -58,7 +58,7 @@ class API extends CRMServiceWP\Plugin {
 
 		// Get API options.
 		self::$api_base_url = get_option( 'crmservice_api_baseurl' );
-		self::$api_key = get_option( 'crmservice_api_key' );
+		self::$api_key = self::$helper->get_api_key();
 	} // end __construct
 
 	/**

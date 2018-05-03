@@ -4,14 +4,14 @@
  *
  * @package CRMServiceWP
  *
- * Plugin Name:				CRM-Service
+ * Plugin Name:				CRM-service WP Forms
  * Plugin URI:
- * Description: 			Integration between CRM-Service and WordPress
- * Author: 						sippis
- * Author URI:				https://www.dude.fi
- * License:           GPLv3
- * License URI:       https://www.gnu.org/licenses/gpl.html
- * Version: 					1.1.0-beta
+ * Description: 			Integration between CRM-service and WordPress
+ * Author: 						crmservice
+ * Author URI:				https://crm-service.fi/
+ * License:           GPLv2
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Version: 					1.1.2-beta
  * Requires at least:	4.9.4
  * Tested up to: 			4.9.4
  *
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 15:03:06
+ * @Last Modified time: 2018-05-03 11:24:54
  */
 
 namespace CRMServiceWP;
@@ -34,6 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
+	define( 'CRMSERVICEWP_VERSION', '1.1.1-beta' );
+
 	/**
 	 *  Main class for plugin.
 	 */
@@ -68,8 +70,6 @@ if ( ! class_exists( 'Plugin' ) ) :
 		 */
 		public static function load() {
 
-			// load send and all that jazz only if SOAP and API checks are OK.
-
 			// Include files needed always.
 			include_once self::crmservice_base_path( 'classes/class-helper.php' );
 			include_once self::crmservice_base_path( 'classes/class-cpt.php' );
@@ -82,9 +82,9 @@ if ( ! class_exists( 'Plugin' ) ) :
 			// Include files and run hooks needed only in admin.
 			if ( \is_admin() ) {
 				include_once self::crmservice_base_path( 'classes/admin/class-settings.php' );
+				include_once self::crmservice_base_path( 'classes/admin/class-notices.php' );
 
 				\add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin' ) );
-				\add_action( 'admin_init', array( __CLASS__, 'maybe_show_admin_notices' ) );
 			}
 
 			// Add actions.
@@ -123,128 +123,6 @@ if ( ! class_exists( 'Plugin' ) ) :
 				}
 			}
 		} // end enqueue_admin
-
-		/**
-		 *  Check if we need to show some admin notices
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function maybe_show_admin_notices() {
-			// Maybe show notice from url.
-			if ( \current_user_can( 'manage_options' ) && isset( $_GET['crmservice_message'] ) ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_from_url' ) );
-			}
-
-			// Maybe show SOAP compatibility error.
-			if ( \current_user_can( 'edit_posts' ) && ! self::$helper->check_soap_support() ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_soap_support' ) );
-			}
-
-			// Maybe show onboarding process.
-			if ( current_user_can( 'manage_options' ) && ! self::$helper->check_api_settings_existance() ) {
-				add_action( 'admin_notices', array( __CLASS__, 'maybe_show_onboarding' ) );
-				return;
-			}
-
-			// Maybe show API connectivity issue warning.
-			if ( \current_user_can( 'edit_posts' ) && ! self::$helper->check_api_credentials_health() ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_no_api_connection' ) );
-			}
-
-			// Maybe show selected form plugin not active warning
-			if ( \current_user_can( 'manage_options' ) && ! self::$helper->check_if_form_plugin_active() ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_form_plugin_not_active' ) );
-			}
-
-			// Maybe show form plugin setting missing warning.
-			if ( \current_user_can( 'manage_options' ) && ! self::$helper->get_form_plugin() ) {
-				\add_action( 'admin_notices', array( __CLASS__, 'notice_form_plugin_not_configured' ) );
-			}
-		} // end maybe_show_admin_notices
-
-		public static function maybe_show_onboarding() {
-			$screen = get_current_screen();
-
-			if ( 'crmservice_form_page_crmservice' !== $screen->id ) {
-				include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/onboarding.php' );
-			}
-		} // end maybe_show_onboarding
-
-		/**
-		 *  Show warnings from url parameter.
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function notice_from_url() {
-			$text_string = false;
-
-			if ( 'purgecache' === $_GET['crmservice_message'] ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated
-				$classes = 'notice-success';
-				$text_string = \wp_kses( 'Plugin cache cleared.', 'crmservice' );
-			} else if ( 'reset' === $_GET['crmservice_message'] ) { // phpcs:ignore WordPress.VIP.ValidatedSanitizedInput.InputNotValidated
-				$classes = 'notice-success';
-				$text_string = \wp_kses( 'Plugin setting reseted.', 'crmservice' );
-			}
-
-			if ( $text_string ) {
-				include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
-			}
-		} // end notice_from_url
-
-		/**
-		 *  Show SOAP compatibility issue warning
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function notice_soap_support() {
-			$classes = 'notice-error';
-			$text_string = \wp_kses( '<b>CRM-Service plugin can not work</b>, because your server does not have SOAP client installed or activated. Please contact your system administrator.', 'crmservice' );
-
-			include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
-		} // end notice_no_api_connection
-
-		/**
-		 *  Show API connectivity issue warning
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function notice_no_api_connection() {
-			$classes = 'notice-error';
-			$text_string = \wp_kses( '<b>CRM-Service plugin can not connect to CRM-Service!</b>', 'crmservice' );
-
-			if ( ! \current_user_can( 'manage_options' ) ) {
-				$text_string .= ' ' . \wp_kses( 'Please contact your site administrator to fix this issue.', 'crmservice' );
-			} else {
-				// Translators: %s is link to settings page.
-		    $text_string .= ' ' . wp_sprintf( wp_kses( 'There might be a temporary problem with our API or you might have added wrong <a href="%s">API credentials</a>. If this problem persist, please contact our support.', 'crmservice' ), self::$helper->get_plugin_page_url( array( 'page' => 'crmservice' ) ) );
-			}
-
-			include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
-		} // end notice_no_api_connection
-
-		/**
-		 *  Show configuration issue warning
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function notice_form_plugin_not_configured() {
-			$classes = 'notice-warning';
-			$text_string = \wp_kses( '<b>CRM-Service plugin can not work</b>, form plugin is not selected.', 'crmservice' );
-
-			include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
-		} // end notice_form_plugin_not_configured
-
-		/**
-		 *  Show form plugin issue warning
-		 *
-		 *  @since  0.1.1-alpha
-		 */
-		public static function notice_form_plugin_not_active() {
-			$classes = 'notice-warning';
-			$text_string = \wp_kses( '<b>CRM-Service plugin can not work</b>, form plugin selected is not active.', 'crmservice' );
-
-			include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
-		} // end notice_form_plugin_not_active
 	} // end class Plugin
 
 	/**

@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 14:58:15
+ * @Last Modified time: 2018-04-30 14:34:02
  *
  * @package crmservice
  */
@@ -47,7 +47,7 @@ class Helper extends CRMServiceWP\Plugin {
 	 */
 	public static function check_api_settings_existance() {
 		$api_account_id = \get_option( 'crmservice_api_baseurl' );
-		$api_key = \get_option( 'crmservice_api_key' );
+		$api_key = self::get_api_key();
 
 		if ( empty( $api_account_id ) || empty( $api_key ) ) {
 			return false;
@@ -126,7 +126,7 @@ class Helper extends CRMServiceWP\Plugin {
 				'slug'					=> 'contact-form-7',
 				'dirfile'				=> 'contact-form-7/wp-contact-form-7.php',
 				'new_url'				=> 'admin.php?page=wpcf7',
-				'submit_hook'		=> 'wpcf7_submit',
+				'submit_hook'		=> 'wpcf7_after_flamingo',
 				'plugin_url'		=> 'https://wordpress.org/plugins/contact-form-7/',
 				'class'					=> 'CRMServiceWP\Forms\ContactForm7\FormsContactForm7',
 			),
@@ -164,6 +164,20 @@ class Helper extends CRMServiceWP\Plugin {
 
 		return $supported_plugins[ $form_plugin ];
 	} // end get_form_plugin
+
+	/**
+	 *  Get API key.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @return mixed  string of API key if configured, false otherwise
+	 */
+	public static function get_api_key() {
+		if ( $api_key = getenv( 'CRMSERVICE_API_KEY' ) ) {
+			return $api_key;
+		}
+
+		return get_option( 'crmservice_api_key' );
+	} // end get_api_key
 
 	/**
 	 *  Add scheme to url if does not have already.
@@ -290,7 +304,7 @@ class Helper extends CRMServiceWP\Plugin {
 		}
 	} // end reset
 
-	public function get_site_locale() {
+	public static function get_site_locale() {
 		$locale = \get_locale();
 
 		if ( 'fi' === $locale ) {
@@ -299,4 +313,12 @@ class Helper extends CRMServiceWP\Plugin {
 
 		return $locale;
 	} // end get_site_locale
+
+	public static function check_contact_form_7_flamingo() {
+		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {
+			return false;
+		}
+
+		return true;
+	} // end check_contact_form_7_flamingo
 } // end class Helper

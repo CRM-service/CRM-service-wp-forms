@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 15:06:57
+ * @Last Modified time: 2018-04-30 14:41:28
  *
  * @package crmservice
  */
@@ -113,11 +113,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *  @param  array $result result of send
 	 *  @return mixed             array with mapped data or false
 	 */
-	public static function map_fields_for_send( $contact_form = null, $result = null ) {
-		if ( ! $contact_form ) {
-			return false;
-		}
-
+	public static function map_fields_for_send( $result = null ) {
 		if ( ! $result ) {
 			return false;
 		}
@@ -138,7 +134,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 		}
 
 		// Get integration connections.
-		$form_field_connections = CRMServiceWP\Forms\Common\FormsCommon::get_integration_field_connections( $contact_form->id() );
+		$form_field_connections = CRMServiceWP\Forms\Common\FormsCommon::get_integration_field_connections( $result['contact_form_id'] );
 
 		if ( ! $form_field_connections ) {
 			return false; // no connections, bail.
@@ -172,12 +168,12 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *  @param  array $result result of send
 	 *  @return mixed             module name for send, false if not configured.
 	 */
-	public static function get_module_for_send( $contact_form = null, $result = null ) {
-		if ( ! $contact_form ) {
+	public static function get_module_for_send( $result = null ) {
+		if ( ! $result ) {
 			return false;
 		}
 
-		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $contact_form->id() );
+		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $result['contact_form_id'] );
 	} // end get_module_for_send
 
 	/**
@@ -185,7 +181,16 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 1.1.0-beta
 	 */
-	public static function set_send_ok( $entry ) {
+	public static function set_send_ok( $result = null ) {
+		if ( ! $result ) {
+			return;
+		}
+
+		if ( ! isset( $result['flamingo_contact_id'] ) ) {
+			return;
+		}
+
+		\update_post_meta( $result['flamingo_contact_id'], '_crmservice_send', date( 'Y-m-d H:i:s' ) );
 	} // end set_send_ok
 
 	/**
@@ -193,6 +198,19 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 1.1.0-beta
 	 */
-	public static function set_send_fail( $entry ) {
+	public static function set_send_fail( $result = null ) {
+		if ( ! $result ) {
+			return;
+		}
+
+		if ( ! isset( $result['flamingo_contact_id'] ) ) {
+			return;
+		}
+
+		// Get old fails if one.
+		$fails = \get_post_meta( $result['flamingo_contact_id'], '_crmservice_send_fail', true );
+		$fails[] = date( 'Y-m-d H:i:s' );
+
+		\update_post_meta( $result['flamingo_contact_id'], '_crmservice_send_fail', $fails );
 	} // end set_send_fail
 } // end class GravityForms

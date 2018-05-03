@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-18 16:33:03
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-20 11:04:58
+ * @Last Modified time: 2018-05-03 11:39:52
  */
 
 namespace CRMServiceWP;
@@ -34,8 +34,8 @@ $form_plugins = CRMServiceWP\Helper\Helper::get_supported_form_plugins();
 foreach  ( $form_plugins as $plugin ) {
 	if ( $plugin['active'] ) {
 		$first_step['title'] = esc_attr__( 'Form plugin activated!', 'crmservice' );
-		$first_step['desc'] = sprintf( esc_attr__( "Looks like you already have %s installed and active, that's awesome!", 'crmservice' ), $plugin['name'] );
-		$first_step['desc'] .= '<br/><br/>' . esc_attr__( "You are only two steps away from sending data to CRM-Service.", 'crmservice' );
+		$first_step['desc'] = sprintf( esc_attr__( "Looks like you already have the %s installed and active, that's awesome!", 'crmservice' ), $plugin['name'] );
+		$first_step['desc'] .= '<br/><br/>' . esc_attr__( "You are only two steps away from sending data to the CRM-service.", 'crmservice' );
 		unset( $first_step['bttn'] );
 		continue;
 	}
@@ -79,7 +79,7 @@ if ( empty( $first_step['desc'] ) ) {
 					</div>
 					<div class="content">
 						<h3><?php esc_attr_e( 'Configure the plugin', 'crmservice' ) ?></h3>
-						<p><?php echo wp_kses( 'Configuring the plugin is easy! Just enter your CRM-Service instance url, API key and select the supported form plugin of your choise', 'crmservice' ) ?>.</p>
+						<p><?php echo wp_kses( 'Configuring the plugin is easy! Just enter your CRM-service instance url, API key and select the supported form plugin of your choice', 'crmservice' ) ?>.</p>
 						<p><a href="<?php echo $plugin_page_url ?>" class="button"><?php esc_attr_e( 'Go to settings', 'crmservice' ) ?></a></p>
 					</div>
 				</div>
@@ -91,7 +91,7 @@ if ( empty( $first_step['desc'] ) ) {
 					</div>
 					<div class="content">
 						<h3><?php esc_attr_e( 'Make your first integration', 'crmservice' ) ?></h3>
-						<p><?php esc_attr_e( "Use our simple and intuitive tool to map form fields to CRM-Service module fields. After that you're all set and form submissions will go to CRM-Service!", 'crmservice' ) ?></p>
+						<p><?php esc_attr_e( "Use our simple and intuitive tool to map form fields to the CRM-service module fields. After that you're all set and form submissions will go directly to the CRM-service!", 'crmservice' ) ?></p>
 						<p><a href="<?php echo $new_integration_url ?>" class="button"><?php esc_attr_e( 'Add integration', 'crmservice' ) ?></a></p>
 					</div>
 				</div>

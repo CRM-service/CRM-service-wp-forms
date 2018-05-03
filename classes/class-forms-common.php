@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 14:55:05
+ * @Last Modified time: 2018-05-03 11:24:56
  *
  * @package crmservice
  */
@@ -60,7 +60,23 @@ class FormsCommon extends CRMServiceWP\Plugin {
 
 		// Get form plugin selected and load it's integration class.
 		self::$form_plugin = self::$helper->get_form_plugin();
-		if ( self::$form_plugin && self::$helper->check_if_form_plugin_active() ) {
+		$form_plugin_active = self::$helper->check_if_form_plugin_active();
+
+		if ( \is_admin() && isset( $_GET['action'] ) && isset( $_GET['post'] ) ) {
+			if ( ! empty( $_GET['post'] ) && 'edit' === $_GET['action'] ) {
+				$form_plugin = \get_post_meta( $_GET['post'], '_crmservice_form_plugin', true );
+
+				if ( ! $form_plugin ) {
+					return;
+				}
+
+				$form_plugins = self::$helper->get_supported_form_plugins();
+				self::$form_plugin = $form_plugins[ $form_plugin ];
+				$form_plugin_active = true;
+			}
+		}
+
+		if ( self::$form_plugin && $form_plugin_active ) {
 			$load_slug = self::$form_plugin['slug'];
 			$file_path = CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
 
@@ -232,7 +248,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	} // end get_form_fields_rest
 
 	/**
-	 *  CRM-Service expects some fields in correct format, so do some formatting
+	 *  CRM-service expects some fields in correct format, so do some formatting
 	 *  if needed.
 	 *
 	 *  @since  0.1.1-alpha
@@ -351,8 +367,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  var2 is current form
 	 *
 	 *  Contact Form 7, see https://plugins.svn.wordpress.org/contact-form-7/trunk/modules/flamingo.php
-	 *  var1 is object of contact form
-	 *  var2 is array result of send
+	 *  var1 is array result of send
 	 *
 	 *  @since  0.1.1-alpha
 	 *  @param  mixed  $var1 variable from form plugin hook.

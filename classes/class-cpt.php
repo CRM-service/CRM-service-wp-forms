@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-20 11:14:44
+ * @Last Modified time: 2018-05-03 11:36:07
  *
  * @package crmservice
  */
@@ -70,8 +70,8 @@ class CPT extends CRMServiceWP\Plugin {
 	public static function register_cpt() {
 		$args = array(
 			'labels'              => array(
-				'name'               => \__( 'CRM-Service form integrations', 'crmservice' ),
-				'singular_name'      => \__( 'CRM-Service for integration', 'crmservice' ),
+				'name'               => \__( 'CRM-service form integrations', 'crmservice' ),
+				'singular_name'      => \__( 'CRM-service for integration', 'crmservice' ),
 				'add_new'            => \__( 'Add new form integration', 'crmservice' ),
 				'add_new_item'       => \__( 'Add new form integration', 'crmservice' ),
 				'edit_item'          => \__( 'Edit form integration', 'crmservice' ),
@@ -81,10 +81,10 @@ class CPT extends CRMServiceWP\Plugin {
 				'not_found'          => \__( 'No form integrations found', 'crmservice' ),
 				'not_found_in_trash' => \__( 'No form integrations found in trash', 'crmservice' ),
 				'parent_item_colon'  => \__( 'Parent form integration:', 'crmservice' ),
-				'menu_name'          => \__( 'CRM-Service', 'crmservice' ),
+				'menu_name'          => \__( 'CRM-service', 'crmservice' ),
 			),
 			'hierarchical'        => false,
-			'description'         => 'CRM-Service <-> Form Plugins integration data holder',
+			'description'         => 'CRM-service <-> Form Plugins integration data holder',
 			'taxonomies'          => array(),
 			'public'              => false,
 			'show_ui'             => true,
@@ -182,6 +182,9 @@ class CPT extends CRMServiceWP\Plugin {
 			return; // bail if user has no rights.
 		}
 
+		// Save current plugin version to meta.
+		\update_post_meta( $post_id, '_crmservice_plugin_version', CRMSERVICEWP_VERSION );
+
 		// Save current form plugin configuration to meta.
 		if ( isset( $_POST['crmservice_form'] ) && \get_post_meta( $post_id, '_crmservice_form', true ) !== $_POST['crmservice_form'] ) {
 			\update_post_meta( $post_id, '_crmservice_form_plugin', self::$helper->get_form_plugin( true ) );
@@ -252,27 +255,27 @@ class CPT extends CRMServiceWP\Plugin {
 			if ( ! empty( $form ) ) {
 				if ( 1 < CRMServiceWP\Forms\Common\FormsCommon::get_integration_count_for_form( $form ) ) {
 					$status = 'warn';
-					$status_message[] = \__( 'Many integrations', 'crmservice' );
+					$status_message[] = \__( 'Found multiple integrations for a same form', 'crmservice' );
 				}
 			}
 
 			// Check if form plugin is same than configured.
 			if ( $form_plugin !== self::$helper->get_form_plugin( true ) ) {
 				$status = 'error';
-				$status_message[] = \__( 'Different form plugin that is configured', 'crmservice' );
+				$status_message[] = \__( 'Integration uses different form plugin that is configured in settings', 'crmservice' );
 			}
 
 			// Check that the integration is configured.
 			if ( empty( $form ) || empty( $module ) || empty( $connections ) ) {
 				$status = 'error';
-				$status_message[] = \__( 'Not configured', 'crmservice' );
+				$status_message[] = \__( 'Integration not configured', 'crmservice' );
 			}
 
 			// Select status message to show in indicator tooltip.
 			if ( empty( $status_message ) ) {
-				$status_message = \__( 'Working correctly', 'crmservice' );
+				$status_message = \__( 'Integration is working correctly', 'crmservice' );
 			} else {
-				$status_message = implode( ', ', $status_message );
+				$status_message = ucfirst( mb_strtolower( implode( ', ', $status_message ) ) );
 			}
 
 			// Show indicator and tooltip.
@@ -324,7 +327,7 @@ class CPT extends CRMServiceWP\Plugin {
 
 	    if ( $form_plugin !== self::$helper->get_form_plugin( true ) ) {
 				$classes = 'notice-warning';
-				$text_string = \wp_kses( 'This integration uses different form plugin that is configured to use.', 'crmservice' );
+				$text_string = \wp_kses( 'This integration uses different form plugin that is configured in settings', 'crmservice' );
 
 				include_once CRMServiceWP\Plugin::crmservice_base_path( 'views/admin/notice.php' );
 			}

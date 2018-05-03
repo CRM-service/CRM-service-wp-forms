@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-18 14:55:58
+ * @Last Modified time: 2018-05-03 11:25:04
  *
  * @package crmservice
  */
@@ -84,7 +84,7 @@ class Settings extends CRMServiceWP\Plugin {
 	public static function add_menu_page() {
 		\add_submenu_page(
 			self::$helper->get_plugin_page_url( null, true ),
-			\esc_attr__( 'CRM-Service settings', 'crmservice' ),
+			\esc_attr__( 'CRM-service settings', 'crmservice' ),
 			\esc_attr__( 'Settings', 'crmservice' ),
 			'manage_options',
 			'crmservice',
@@ -168,19 +168,16 @@ class Settings extends CRMServiceWP\Plugin {
 	public static function field_callback_api_baseurl() {
 		$value = \get_option( 'crmservice_api_baseurl' );
 		$value = ( ! empty( $value ) ) ? $value : '';
-		$readonly = ( ! empty( $value ) ) ? ' readonly' : '';
+		$readonly = ( ! empty( $value ) ) ? ' disabled' : '';
 
 		echo '<input type="text" class="regular-text" id="crmservice_api_baseurl" name="crmservice_api_baseurl" value="' . \esc_attr( $value ) . '"' . $readonly . '/>';
 	} // end field_callback_api_baseurl
 
 	public static function field_callback_api_key() {
-		$value = getenv( 'CRMSERVICE_API_KEY' );
-		if ( empty( $value ) ) {
-			$value = \get_option( 'crmservice_api_key' );
-		}
+		$value = self::$helper->get_api_key();
 
 		$value = ( ! empty( $value ) ) ? $value : '';
-		$readonly = ( ! empty( $value ) ) ? ' readonly' : '';
+		$readonly = ( ! empty( $value ) ) ? ' disabled' : '';
 
 		echo '<input type="password" class="regular-text" id="crmservice_api_key" name="crmservice_api_key" value="' . \esc_attr( $value ) . '"' . $readonly . '/>';
 	} // end field_callback_api_key

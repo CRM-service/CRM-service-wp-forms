@@ -1,9 +1,9 @@
 {
   "name": "wordpress-plugin",
-  "version": "0.1.0-alpha",
-  "description": "CRM-Service plugin",
-  "author": "Digitoimisto Dude",
-  "license": "GPLv3",
+  "version": "1.0.0",
+  "description": "CRM-service plugin",
+  "author": "CRM-service",
+  "license": "GPLv2",
   "repository": {
     "type": "git",
     "url": ""

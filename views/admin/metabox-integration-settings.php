@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 14:10:28
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-24 12:33:39
+ * @Last Modified time: 2018-05-03 11:36:35
  *
  * @package crmservice
  */
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php if ( empty( $forms ) ) : ?>
 				<p>
-          <?php printf( \wp_kses( \__( 'You do not have any forms yet. Create a <a href="%s">new form</a>.', 'crmservice' ), array(
+          <?php printf( \wp_kses( \__( 'You don\'t have any forms yet. Create a <a href="%s">new form</a>.', 'crmservice' ), array(
 						'a' => array(
 						'href' => array(),
 					), ) ), \esc_url( $new_form_url ) ) ?>
@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p class="label"><?php \esc_attr_e( 'CRM Module', 'crmservice' ); ?></p>
 
 			<?php if ( empty( $crm_modules ) ) : ?>
-				<p><?php \esc_attr_e( 'No modules found, please contact your CRM manager.', 'crmservice' ); ?></p>
+				<p><?php \esc_attr_e( 'No modules found, please contact your CRM-service provider.', 'crmservice' ); ?></p>
 			<?php else : ?>
 				<select name="crmservice_module">
 					<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
