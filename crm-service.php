@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-03 11:24:54
+ * @Last Modified time: 2018-05-07 15:43:14
  */
 
 namespace CRMServiceWP;
@@ -126,6 +126,26 @@ if ( ! class_exists( 'Plugin' ) ) :
 	} // end class Plugin
 
 	/**
+	 *  Schedule maybe resend failed submissions sends.
+	 *
+	 *  @since  1.1.1-beta
+	 */
+	function plugin_activation() {
+		if ( ! \wp_next_scheduled( 'crmservice_maybe_resend' ) ) {
+			\wp_schedule_event( time(), 'hourly', 'crmservice_maybe_resend' );
+    }
+	} // end plugin_activation
+
+	/**
+	 *  Remove cron schedules.
+	 *
+	 *  @since  1.1.1-beta
+	 */
+	function plugin_deactivation() {
+		\wp_clear_scheduled_hook( 'crmservice_maybe_resend' );
+	} // end plugin_deactivation
+
+	/**
 	 *  Start the plugin.
 	 *
 	 *  @since  0.1.0-alpha
@@ -137,4 +157,9 @@ if ( ! class_exists( 'Plugin' ) ) :
 endif;
 
 // Add actio to really start the plugin.
-add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin' );
+\add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin' );
+
+// Add plugin activation and deactivation hooks.
+register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activation' );
+register_deactivation_hook( __FILE__, __NAMESPACE__ . '\\plugin_deactivation' );
+

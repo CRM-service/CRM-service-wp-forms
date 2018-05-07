@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-03 11:25:04
+ * @Last Modified time: 2018-05-07 13:31:03
  *
  * @package crmservice
  */
@@ -168,7 +168,7 @@ class Settings extends CRMServiceWP\Plugin {
 	public static function field_callback_api_baseurl() {
 		$value = \get_option( 'crmservice_api_baseurl' );
 		$value = ( ! empty( $value ) ) ? $value : '';
-		$readonly = ( ! empty( $value ) ) ? ' disabled' : '';
+		$readonly = ( ! empty( $value ) ) ? ' readonly' : '';
 
 		echo '<input type="text" class="regular-text" id="crmservice_api_baseurl" name="crmservice_api_baseurl" value="' . \esc_attr( $value ) . '"' . $readonly . '/>';
 	} // end field_callback_api_baseurl
@@ -177,7 +177,12 @@ class Settings extends CRMServiceWP\Plugin {
 		$value = self::$helper->get_api_key();
 
 		$value = ( ! empty( $value ) ) ? $value : '';
-		$readonly = ( ! empty( $value ) ) ? ' disabled' : '';
+		$readonly = ( ! empty( $value ) ) ? ' readonly' : '';
+
+		if ( getenv( 'CRMSERVICE_API_KEY' ) && ! empty( $readonly ) ) {
+			_e( 'Defined in server envarioment variable', 'crm-service' );
+			return;
+		}
 
 		echo '<input type="password" class="regular-text" id="crmservice_api_key" name="crmservice_api_key" value="' . \esc_attr( $value ) . '"' . $readonly . '/>';
 	} // end field_callback_api_key

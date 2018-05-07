@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 15:09:51
+ * @Last Modified time: 2018-05-07 15:10:04
  *
  * @package crmservice
  */
@@ -106,23 +106,19 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	 *
 	 *  @since  1.1.0-beta
 	 *  @param  array $entry submission data.
-	 *  @param  array $form form data.
 	 *  @return mixed             array with mapped data or false
 	 */
-	public static function map_fields_for_send( $entry = null, $form = null ) {
+	public static function map_fields_for_send( $entry = null ) {
 		if ( ! $entry ) {
-			return false;
-		}
-
-		if ( ! $form ) {
 			return false;
 		}
 
 		// Get submission ID for getting submission fields.
 		$submission_id = (int)$entry['id'];
+		$form_id = (int)$entry['form_id'];
 
 		// Get integration connections.
-		$form_field_connections = CRMServiceWP\Forms\Common\FormsCommon::get_integration_field_connections( $form['id'] );
+		$form_field_connections = CRMServiceWP\Forms\Common\FormsCommon::get_integration_field_connections( $form_id );
 
 		if ( ! $form_field_connections ) {
 			return false; // no connections, bail.
@@ -153,15 +149,16 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	 *
 	 *  @since  1.1.0-beta
 	 *  @param  array $entry submission data.
-	 *  @param  array $form form data.
 	 *  @return mixed             module name for send, false if not configured.
 	 */
 	public static function get_module_for_send( $entry = null, $form = null ) {
-		if ( ! $form ) {
+		if ( ! $entry ) {
 			return false;
 		}
 
-		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $form['id'] );
+		$form_id = (int)$entry['form_id'];
+
+		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $form_id );
 	} // end get_module_for_send
 
 	/**
@@ -187,4 +184,80 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 
 		\gform_update_meta( (int)$entry['id'], '_crmservice_send_fail', $fails );
 	} // end set_send_fail
+
+	/**
+	 *  Get submissions where CRM send failed.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @return mixed  false or array with submission id as key and try times array as value
+	 */
+	public static function get_failed_submissions() {
+		$submissions = array();
+
+
+		// Args for GF submission get.
+		$search_criteria = array(
+			'status'				=> 'active',
+			'field_filters'	=> array(
+				array(
+					'key'				=> '_crmservice_send_fail',
+					'value'			=> '',
+					'operator'	=> 'isnot',
+				)
+			)
+		);
+
+		$paging	= array(
+			'offset' 		=> 0,
+			'page_size'	=> 999999999999, // Big int for getting all submissions, GF call is basically SQL query.
+		);
+
+		// Get failed submissions.
+		$gf_submissions = \GFAPI::get_entries( 0, $search_criteria, array(), $paging ); // first var zero for all forms
+
+		if ( \is_wp_error( $gf_submissions ) || empty( $gf_submissions ) ) {
+			return false; // Can not get submissions, bail.
+		}
+
+		// Loop submissions.
+		foreach ( $gf_submissions as $submission ) {
+			$submission_id = (int)$submission['id'];
+
+			// If send has been marked as ok, continue to next submission.
+			$ok = \gform_get_meta( $submission_id, '_crmservice_send' );
+			if ( $ok ) {
+				continue;
+			}
+
+			// Get fail times and add to submission array.
+			$fails = \gform_get_meta( $submission_id, '_crmservice_send_fail' );
+			$submissions[ $submission_id ] = $fails;
+		}
+
+		return $submissions;
+	} // end get_failed_submissions
+
+	/**
+	 *  Get single submission.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @param  integer $submission_id submission id to get
+	 *  @return mixed                  false of array containing resend nag and submission data
+	 */
+	public static function get_submission( $submission_id = null ) {
+		if ( ! $submission_id ) {
+			return false; // No submission id, bail.
+		}
+
+		// Get submission.
+		$submission = \GFAPI::get_entry( $submission_id );
+
+		if ( \is_wp_error( $submission ) ) {
+			return false; // Can not get submission, bail.
+		}
+
+   	return array(
+   		$submission,
+   	);
+	} // end get_submission
 } // end class GravityForms

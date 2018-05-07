@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-05 16:24:26
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-18 16:56:01
+* @Last Modified time: 2018-05-07 15:35:11
 */
 
 @import 'jeet/scss/index';
@@ -10,6 +10,16 @@
 
 ul#adminmenu {
 	li#menu-posts-crmservice_form {
+
+    .dashicons-before {
+      img {
+        width: auto;
+        max-height: 24px;
+        padding: 0;
+        margin-top: 5px;
+      }
+    }
+
 		ul.wp-submenu {
 			li.wp-first-item {
 				display: none;
@@ -205,9 +215,15 @@ body.post-type-crmservice_form {
           height: auto;
           max-height: 44px;
 
-          * {
+          path,
+          rect {
 		      	fill: #3fc92a;
 		      }
+
+          polyline,
+          line {
+            stroke: #3fc92a;
+          }
         }
       }
 

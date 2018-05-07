@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-03 11:36:07
+ * @Last Modified time: 2018-05-07 15:35:49
  *
  * @package crmservice
  */
@@ -91,7 +91,7 @@ class CPT extends CRMServiceWP\Plugin {
 			'show_in_menu'        => true,
 			'show_in_admin_bar'   => false,
 			'menu_position'       => 80,
-			'menu_icon'           => null,
+			'menu_icon'           => \plugins_url( 'assets/admin/icon.png', __DIR__ ),
 			'show_in_nav_menus'   => false,
 			'publicly_queryable'  => false,
 			'exclude_from_search' => true,

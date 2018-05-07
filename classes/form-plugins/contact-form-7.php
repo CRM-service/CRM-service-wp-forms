@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-30 14:41:28
+ * @Last Modified time: 2018-05-07 15:06:43
  *
  * @package crmservice
  */
@@ -113,24 +113,44 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *  @param  array $result result of send
 	 *  @return mixed             array with mapped data or false
 	 */
-	public static function map_fields_for_send( $result = null ) {
+	public static function map_fields_for_send( $var1 = false, $var2 = falsel ) {
+		$result = self::_get_result_var( $var1, $var2 );
 		if ( ! $result ) {
 			return false;
 		}
 
-		// Filter cases where we should proceed with sending data to CRM.
-		$cases = (array) \apply_filters( 'wpcf7_flamingo_submit_if', array( 'mail_sent', 'mail_failed' ) );
-		$cases = (array) \apply_filters( 'wpcf7_crmservice_submit_if', array( 'mail_sent', 'mail_failed' ) );
+		// Check if this is submission resend call.
+		if ( ! isset( $result['resend'] ) ) {
+			// Filter cases where we should proceed with sending data to CRM.
+			$cases = (array) \apply_filters( 'wpcf7_flamingo_submit_if', array( 'mail_sent', 'mail_failed' ) );
+			$cases = (array) \apply_filters( 'wpcf7_crmservice_submit_if', array( 'mail_sent', 'mail_failed' ) );
 
-		if ( empty( $result['status'] ) || ! in_array( $result['status'], $cases ) ) {
-			return; // submit status is not in proceed with send list, bail.
-		}
+			if ( empty( $result['status'] ) || ! in_array( $result['status'], $cases ) ) {
+				return; // submit status is not in proceed with send list, bail.
+			}
 
-		// Get submission.
-		$submission = \WPCF7_Submission::get_instance();
+			// Get submission.
+			$submission = \WPCF7_Submission::get_instance();
 
-		if ( ! $submission || ! $posted_data = $submission->get_posted_data() ) {
-			return; // something odd with submission, bail.
+			if ( ! $submission || ! $posted_data = $submission->get_posted_data() ) {
+				return; // something odd with submission, bail.
+			}
+		} else {
+			// Okay, was a resend call. Get the data for handling.
+			$result = $result['data'][0];
+
+			// Get fields data.
+			$posted_data = $result->fields;
+
+			// Get form.
+			$form = \WPCF7_ContactForm::find( array( 'name' => $result->channel ) );
+			if ( empty( $form ) ) {
+				return; // Can not get form, bail.
+			}
+
+			// Make fake result.
+			$result = array();
+			$result['contact_form_id'] = $form[0]->id();
 		}
 
 		// Get integration connections.
@@ -168,9 +188,26 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *  @param  array $result result of send
 	 *  @return mixed             module name for send, false if not configured.
 	 */
-	public static function get_module_for_send( $result = null ) {
+	public static function get_module_for_send( $var1 = false, $var2 = false ) {
+		$result = self::_get_result_var( $var1, $var2 );
 		if ( ! $result ) {
 			return false;
+		}
+
+		// If is resend call.
+		if ( isset( $result['resend'] ) ) {
+			// Okay, was a resend call. Get the data for handling.
+			$result = $result['data'][0];
+
+			// Get form.
+			$form = \WPCF7_ContactForm::find( array( 'name' => $result->channel ) );
+			if ( empty( $form ) ) {
+				return; // Can not get form, bail.
+			}
+
+			// Make fake result.
+			$result = array();
+			$result['contact_form_id'] = $form[0]->id();
 		}
 
 		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $result['contact_form_id'] );
@@ -181,16 +218,28 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 1.1.0-beta
 	 */
-	public static function set_send_ok( $result = null ) {
+	public static function set_send_ok( $var1 = false, $var2 = false ) {
+		$result = self::_get_result_var( $var1, $var2 );
 		if ( ! $result ) {
 			return;
 		}
 
-		if ( ! isset( $result['flamingo_contact_id'] ) ) {
+		// If is resend call.
+		if ( isset( $result['resend'] ) ) {
+			// Okay, was a resend call. Get the data for handling.
+			$result = $result['data'][0];
+
+			// Make feke result.
+			$new_result = array();
+			$new_result['flamingo_inbound_id'] = $result->id;
+			$result = $new_result;
+		}
+
+		if ( ! isset( $result['flamingo_inbound_id'] ) ) {
 			return;
 		}
 
-		\update_post_meta( $result['flamingo_contact_id'], '_crmservice_send', date( 'Y-m-d H:i:s' ) );
+		\update_post_meta( $result['flamingo_inbound_id'], '_crmservice_send', date( 'Y-m-d H:i:s' ) );
 	} // end set_send_ok
 
 	/**
@@ -198,19 +247,118 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *
 	 *  @since 1.1.0-beta
 	 */
-	public static function set_send_fail( $result = null ) {
+	public static function set_send_fail( $var1 = false, $var2 = false ) {
+		$result = self::_get_result_var( $var1, $var2 );
 		if ( ! $result ) {
 			return;
 		}
 
-		if ( ! isset( $result['flamingo_contact_id'] ) ) {
-			return;
+		// If is resend call.
+		if ( isset( $result['resend'] ) ) {
+			// Okay, was a resend call. Get the data for handling.
+			$result = $result['data'][0];
+
+			// Make feke result.
+			$new_result = array();
+			$new_result['flamingo_inbound_id'] = $result->id;
+			$result = $new_result;
 		}
 
 		// Get old fails if one.
-		$fails = \get_post_meta( $result['flamingo_contact_id'], '_crmservice_send_fail', true );
+		$fails = \get_post_meta( $result['flamingo_inbound_id'], '_crmservice_send_fail', true );
 		$fails[] = date( 'Y-m-d H:i:s' );
 
-		\update_post_meta( $result['flamingo_contact_id'], '_crmservice_send_fail', $fails );
+		\update_post_meta( $result['flamingo_inbound_id'], '_crmservice_send_fail', $fails );
 	} // end set_send_fail
+
+	/**
+	 *  Get submissions where CRM send failed.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @return mixed  false or array with submission id as key and try times array as value
+	 */
+	public static function get_failed_submissions() {
+		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {
+			return false; // No flamingo, bail.
+		}
+
+		// Defaults.
+		$submissions = array();
+
+		// Get failed submissions.
+		$cf7_submissions = \Flamingo_Inbound_Message::find( array(
+			'posts_per_page'					=> -1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'			=> '_crmservice_send_fail',
+				),
+				array(
+					'key'			=> '_crmservice_send',
+					'compare'	=> 'NOT EXISTS',
+				),
+			),
+		) );
+
+		// Loop failed and get try times.
+		foreach ( $cf7_submissions as $submission ) {
+			$failed_submissions = \get_post_meta( $submission->id, '_crmservice_send_fail', true );
+			$submissions[ $submission->id ] = $failed_submissions;
+		}
+
+		return $submissions;
+	} // end get_failed_submissions
+
+	/**
+	 *  Get single submission.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @param  integer $submission_id submission id to get
+	 *  @return mixed                  false of array containing resend nag and submission data
+	 */
+	public static function get_submission( $submission_id = null ) {
+		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {
+			return false; // No flamingo, bail.
+		}
+
+		if ( ! $submission_id ) {
+			return false; // No submission id, bail.
+		}
+
+		// Get submission.
+   	$submission = \Flamingo_Inbound_Message::find( array(
+   		'post_id'	=> $submission_id,
+   	) );
+
+   	if ( empty( $submission ) ) {
+   		return false; // Can not get submission, bail.
+   	}
+
+   	// Return array containing info that is resend and submission data.
+   	return array(
+   		array(
+   			'resend'	=> true,
+   			'data'		=> $submission,
+   		),
+   	);
+	} // end get_submission
+
+	/**
+	 *  Get CF7 / Flamingo result for submission handling,
+	 *  veriable depends on submit hook which depends on
+	 *  if Flamingo is active.
+	 *
+	 *  If Flamingo is active, var1 is $result. Without
+	 *  Flamingo, var2 is $result. $result is what we want
+	 *  to pass for handling.
+	 *
+	 *  @since  1.1.1-beta
+	 */
+	private static function _get_result_var( $var1 = false, $var2 = false ) {
+		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {
+			return $var2;
+		}
+
+		return $var1;
+	} // end _get_result_var
 } // end class GravityForms

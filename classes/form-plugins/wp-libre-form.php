@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-24 12:21:30
+ * @Last Modified time: 2018-05-07 15:10:57
  *
  * @package crmservice
  */
@@ -217,4 +217,72 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 
 		\update_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', $fails );
 	} // end set_send_fail
+
+	/**
+	 *  Get submissions where CRM send failed.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @return mixed  false or array with submission id as key and try times array as value
+	 */
+	public static function get_failed_submissions() {
+		$submissions = array();
+
+		// WPLF forms are posts, so make query.
+		$query_args = array(
+			'post_type'								=> 'wplf-submission',
+			'post_status'							=> 'publish',
+			'posts_per_page'					=> -1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'			=> '_crmservice_send_fail',
+				),
+				array(
+					'key'			=> '_crmservice_send',
+					'compare'	=> 'NOT EXISTS',
+				),
+			),
+			'no_found_rows'						=> true,
+			'cache_results'						=> true,
+			'update_post_term_cache'	=> false,
+			'update_post_meta_cache'	=> false,
+		);
+
+		$query = new \WP_Query( $query_args );
+
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) { $query->the_post();
+				$submission_id = \get_the_id();
+
+				// Get fail times and add to submission array.
+				$failed_submissions = \get_post_meta( $submission_id, '_crmservice_send_fail', true );
+				$submissions[ $submission_id ] = $failed_submissions;
+			}
+		}
+
+		return $submissions;
+	} // end get_failed_submissions
+
+	/**
+	 *  Get single submission.
+	 *
+	 *  @since  1.1.1-beta
+	 *  @param  integer $submission_id submission id to get
+	 *  @return mixed                  false of array containing resend nag and submission data
+	 */
+	public static function get_submission( $submission_id = null ) {
+		if ( ! $submission_id ) {
+			return false; // No submission id, bail.
+		}
+
+		// Make fake submission.
+		$submission = new \stdClass();
+   	$submission->ok = 1;
+   	$submission->submission_id = $submission_id;
+   	$submission->form_id = (int) \get_post_meta( $submission_id, '_form_id', true );
+
+   	return array(
+   		$submission,
+   	);
+	} // end get_submission
 } // end class FormsWPLibreForm

@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-03 11:24:56
+ * @Last Modified time: 2018-05-07 15:41:22
  *
  * @package crmservice
  */
@@ -88,6 +88,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 
 				// Hook to submit.
 				\add_action( self::$form_plugin['submit_hook'], array( __CLASS__, 'send_form_submission' ), 50, 4 );
+				\add_action( 'crmservice_maybe_resend', array( __CLASS__, 'resend_failed_submissions' ) );
 			}
 		}
 	} // end __construct
@@ -420,16 +421,58 @@ class FormsCommon extends CRMServiceWP\Plugin {
 			'data'		=> $send_data,
 		) );
 
-		// Send failed, add timestamp of failed attempt.
 		if ( ! $send_result ) {
+			// Send failed, add timestamp of failed attempt.
 			self::$form_plugin_instance->set_send_fail( $var1 );
+		} else {
+			// Add timestamp of succesfull send.
+			self::$form_plugin_instance->set_send_ok( $var1 );
 		}
-
-		// Add timestamp of succesfull send.
-		self::$form_plugin_instance->set_send_ok( $var1 );
 
 		return true; // form OK
 	} // end function send_form_submission
+
+	/**
+	 *  Try to resend failed submission sends to CRM.
+	 *
+	 *  @since  1.1.1-neta
+	 */
+	public static function resend_failed_submissions() {
+		// Get failed submissions.
+		$failed_submissions = self::$form_plugin_instance->get_failed_submissions();
+
+		if ( empty( $failed_submissions ) ) {
+			return; // no failed ones, bail.
+		}
+
+		foreach ( $failed_submissions as $submission_id => $times ) {
+			if ( 3 < count( $times ) ) {
+				continue; // continue to next submission if failed more than three times.
+			}
+
+			// Get single submission for sending.
+			$submission = self::$form_plugin_instance->get_submission( $submission_id );
+
+			if ( ! $submission ) {
+				continue; // can not get single submission, bail.
+			}
+
+			/**
+			 *  Ensure that every single submission get has four array items.
+			 *  Therse items are passed to send_form_submission function. By
+			 *  doing this, we don't have to manage variable amount in every
+			 *  form plugin integration class. Single place trick.
+			 */
+			$i = count( $submission );
+			do {
+			  $submission[] = null;
+			  $i++;
+			} while ( 4 > $i );
+
+			// Aaaaand finally try to resend submission.
+			self::send_form_submission( $submission[0], $submission[1], $submission[2], $submission[3] );
+		}
+	} // end resend_failed_submissions
 } // end class FormsCommon
 
 new FormsCommon();

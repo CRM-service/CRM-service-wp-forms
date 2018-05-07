@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-30 14:34:02
+ * @Last Modified time: 2018-05-07 11:30:45
  *
  * @package crmservice
  */
@@ -138,6 +138,11 @@ class Helper extends CRMServiceWP\Plugin {
 			} else {
 				$plugins[ $key ]['name'] = $plugin['name'] . ' (' . \esc_attr__( 'deactivated', 'crmservice' ) . ')';
 			}
+		}
+
+		// Check contact form 7 submit hook based on flamingo existance.
+		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {
+			$plugins['contact-form-7']['submit_hook'] = 'wpcf7_submit';
 		}
 
 		return $plugins;
