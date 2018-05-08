@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:35:49
+ * @Last Modified time: 2018-05-08 10:53:18
  *
  * @package crmservice
  */
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for registering CPT where all integrations and settings for those are saved.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class CPT extends CRMServiceWP\Plugin {
 	/**
@@ -35,7 +35,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Fire it up!
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public function __construct() {
 		// Get instance of helper.
@@ -48,7 +48,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Add hooks.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	protected function run() {
 		\add_action( 'init', array( __CLASS__, 'register_cpt' ) );
@@ -65,7 +65,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Register custom post type holding integrations.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	public static function register_cpt() {
 		$args = array(
@@ -112,7 +112,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Add our custom meta boxes for integration cpt.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	public static function meta_boxes_register() {
 		\add_meta_box( 'crmservice-integration-settings', __( 'Integration', 'crmservice' ), array( __CLASS__, 'meta_boxes_display_integration_settings' ), 'crmservice_form' );
@@ -121,7 +121,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Output integration settings meta box.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  int $post 		current post where metabox is shown.
 	 */
 	public static function meta_boxes_display_integration_settings( $post ) {
@@ -158,7 +158,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  Handle saving of our CPT and it's metadata
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  integer  $post_id post ID which is being saved.
 	 */
 	public static function meta_boxes_save( $post_id ) {
@@ -218,7 +218,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 * Custom columns in edit.php for Forms.
 	 *
-	 * @since 0.1.1-alpha
+	 * @since 1.0.0
 	 */
   public static function custom_columns_cpt( $columns ) {
 		$new_columns = array(
@@ -236,7 +236,7 @@ class CPT extends CRMServiceWP\Plugin {
   /**
    * Custom column display for Form CPT in edit.php.
    *
-   * @since 0.1.1-alpha
+   * @since 1.0.0
    */
   public static function custom_columns_display_cpt( $column, $post_id ) {
   	// Status column cotent.
@@ -317,7 +317,7 @@ class CPT extends CRMServiceWP\Plugin {
 	/**
 	 *  If integration uses different form plugin tha configured, show admin notice.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function maybe_show_admin_notices() {
 		$screen = \get_current_screen();

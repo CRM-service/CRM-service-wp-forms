@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-25 17:08:45
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-03 11:34:33
+ * @Last Modified time: 2018-05-08 10:53:23
  */
 
 namespace CRMServiceWP\Admin\Notices;
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for plugin settings.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class Notices extends CRMServiceWP\Plugin {
 	/**
@@ -32,7 +32,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Fire it up!
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public function __construct() {
 		// Get instance of helper.
@@ -45,7 +45,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Add hooks.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	protected function run() {
 		\add_action( 'admin_init', array( __CLASS__, 'maybe_show_admin_notices' ) );
@@ -54,7 +54,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Check if we need to show some admin notices
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function maybe_show_admin_notices() {
 		// Maybe show notice from url.
@@ -106,7 +106,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Show warnings from url parameter.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function notice_from_url() {
 		$text_string = false;
@@ -127,7 +127,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Show SOAP compatibility issue warning
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function notice_soap_support() {
 		$classes = 'notice-error';
@@ -139,7 +139,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Show API connectivity issue warning
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function notice_no_api_connection() {
 		$classes = 'notice-error';
@@ -158,7 +158,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Show configuration issue warning
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function notice_form_plugin_not_configured() {
 		$classes = 'notice-warning';
@@ -176,7 +176,7 @@ class Notices extends CRMServiceWP\Plugin {
 	/**
 	 *  Show form plugin issue warning
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function notice_form_plugin_not_active() {
 		$classes = 'notice-warning';

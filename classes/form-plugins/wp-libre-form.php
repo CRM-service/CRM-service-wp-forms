@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:10:57
+ * @Last Modified time: 2018-05-08 10:53:27
  *
  * @package crmservice
  */
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Integration class for WP Libre Form.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
@@ -46,7 +46,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Get forms from WP Libre Form.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @return array  list of forms
 	 */
 	public static function get_forms() {
@@ -83,7 +83,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Get fields for specified form.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  integer $form_id for which form get fields.
 	 *  @return mixed            array of fields or false if no form id or no fields
 	 */
@@ -114,7 +114,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Map submission data to selected fields for sending to CRM.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  object $wplf_data WPLF submission data.
 	 *  @return mixed             array with mapped data or false
 	 */
@@ -161,7 +161,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Get module which we will use for send.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  object $wplf_data WPLF submission data.
 	 *  @return mixed             module name for send, false if not configured.
 	 */
@@ -181,7 +181,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Set timestamp of succesfull crm send.
 	 *
-	 *  @since 0.1.1-alpha
+	 *  @since 1.0.0
 	 *  @param object $wplf_data WPLF submission data.
 	 */
 	public static function set_send_ok( $wplf_data = null ) {
@@ -199,7 +199,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Save timestamp of failed crm send.
 	 *
-	 *  @since 0.1.1-alpha
+	 *  @since 1.0.0
 	 *  @param object $wplf_data WPLF submission data.
 	 */
 	public static function set_send_fail( $wplf_data = null ) {
@@ -221,7 +221,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Get submissions where CRM send failed.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 *  @return mixed  false or array with submission id as key and try times array as value
 	 */
 	public static function get_failed_submissions() {
@@ -266,7 +266,7 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 	/**
 	 *  Get single submission.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 *  @param  integer $submission_id submission id to get
 	 *  @return mixed                  false of array containing resend nag and submission data
 	 */

@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:06:43
+ * @Last Modified time: 2018-05-08 10:52:40
  *
  * @package crmservice
  */
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Integration class for Contact Form 7.
  *
- *  @since 1.1.0-beta
+ *  @since 1.0.0
  */
 class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
@@ -46,7 +46,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Get forms from Contact Form 7.
 	 *
-	 *  @since  1.1.0-beta
+	 *  @since  1.0.0
 	 *  @return array  list of forms
 	 */
 	public static function get_forms() {
@@ -65,7 +65,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Get fields for specified form.
 	 *
-	 *  @since  1.1.0-beta
+	 *  @since  1.0.0
 	 *  @param  integer $form_id for which form get fields.
 	 *  @return mixed            array of fields or false if no form id or no fields
 	 */
@@ -108,7 +108,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Map submission data to selected fields for sending to CRM.
 	 *
-	 *  @since  1.1.0-beta
+	 *  @since  1.0.0
 	 *  @param  object $contact_form CF/ form object
 	 *  @param  array $result result of send
 	 *  @return mixed             array with mapped data or false
@@ -183,7 +183,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Get module which we will use for send.
 	 *
-	 *  @since  1.1.0-beta
+	 *  @since  1.0.0
 	 *  @param  object $contact_form CF/ form object
 	 *  @param  array $result result of send
 	 *  @return mixed             module name for send, false if not configured.
@@ -216,7 +216,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Set timestamp of succesfull crm send.
 	 *
-	 *  @since 1.1.0-beta
+	 *  @since 1.0.0
 	 */
 	public static function set_send_ok( $var1 = false, $var2 = false ) {
 		$result = self::_get_result_var( $var1, $var2 );
@@ -245,7 +245,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Save timestamp of failed crm send.
 	 *
-	 *  @since 1.1.0-beta
+	 *  @since 1.0.0
 	 */
 	public static function set_send_fail( $var1 = false, $var2 = false ) {
 		$result = self::_get_result_var( $var1, $var2 );
@@ -274,7 +274,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Get submissions where CRM send failed.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 *  @return mixed  false or array with submission id as key and try times array as value
 	 */
 	public static function get_failed_submissions() {
@@ -312,7 +312,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	/**
 	 *  Get single submission.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 *  @param  integer $submission_id submission id to get
 	 *  @return mixed                  false of array containing resend nag and submission data
 	 */
@@ -352,7 +352,7 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	 *  Flamingo, var2 is $result. $result is what we want
 	 *  to pass for handling.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 */
 	private static function _get_result_var( $var1 = false, $var2 = false ) {
 		if ( ! class_exists( 'Flamingo_Contact' ) || ! class_exists( 'Flamingo_Inbound_Message' ) ) {

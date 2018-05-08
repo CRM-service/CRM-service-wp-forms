@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 13:31:03
+ * @Last Modified time: 2018-05-08 10:53:22
  *
  * @package crmservice
  */
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for plugin settings.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class Settings extends CRMServiceWP\Plugin {
 	/**
@@ -35,7 +35,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Fire it up!
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public function __construct() {
 		// Get instance of helper.
@@ -48,7 +48,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Add hooks.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	protected function run() {
 		// Add link to settings on plugin list.
@@ -65,7 +65,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Add link to settings on plugin list
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 *  @param array $links links to show below plugin name.
 	 */
 	public static function add_settings_link_to_plugin_list( $links ) {
@@ -79,7 +79,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Add our page to admin menu
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public static function add_menu_page() {
 		\add_submenu_page(
@@ -95,7 +95,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Output the settings page
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	public static function page_output() {
 		self::maybe_send_bugreport();
@@ -105,7 +105,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Register setting sections and fields
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public static function add_setting_sections_and_fields() {
 		// Add empty options with autoload false for performace reasons.
@@ -219,7 +219,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Check if url parameter and nonce says that we need to purge plugin cache.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function maybe_clear_cache() {
 		if ( isset( $_GET['crmservice_purgecache'] ) && \current_user_can( 'manage_options' ) ) {
@@ -237,7 +237,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Check if url parameter and nonce says that we need to reset whole plugin.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function maybe_do_reset() {
 		if ( isset( $_GET['crmservice_reset'] ) && \current_user_can( 'manage_options' ) ) {
@@ -255,7 +255,7 @@ class Settings extends CRMServiceWP\Plugin {
 	/**
 	 *  Do the bug report send.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function maybe_send_bugreport() {
 		if ( \current_user_can( 'manage_options' ) && isset( $_POST['crmservice-sendbugreport'] ) ) :

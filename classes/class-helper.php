@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 11:30:45
+ * @Last Modified time: 2018-05-08 10:53:15
  *
  * @package crmservice
  */
@@ -21,14 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for helper functions used across plugin.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class Helper extends CRMServiceWP\Plugin {
 
 	/**
 	 *  Check if server is capable to handle SOAP calls.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @return boolean  true if can handle soap, false otherwise
 	 */
 	public static function check_soap_support() {
@@ -42,7 +42,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Check if API settings are saved to databse
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @return boolean  true if settings exist, false otherwise
 	 */
 	public static function check_api_settings_existance() {
@@ -59,7 +59,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Check that API connection is working.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @return boolean  true if connection is working, false if not
 	 */
 	public static function check_api_credentials_health() {
@@ -78,7 +78,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Check that selected form plugin is active.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @return boolean  true if plugin is active, false it not
 	 */
 	public static function check_if_form_plugin_active() {
@@ -91,7 +91,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Get list of supported form plugins.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @return array  array of supported plugins
 	 */
 	public static function get_supported_form_plugins() {
@@ -107,7 +107,7 @@ class Helper extends CRMServiceWP\Plugin {
 				'dirfile'				=> 'wp-libre-form/wp-libre-form.php',
 				'new_url'				=> 'edit.php?post_type=wplf-form',
 				'submit_hook'		=> 'wplf_post_validate_submission',
-				'plugin_url'		=> '',
+				'plugin_url'		=> 'https://wordpress.org/plugins/wp-libre-form/',
 				'class'					=> 'CRMServiceWP\Forms\WPLibreForm\FormsWPLibreForm',
 			),
 			'gravityforms'	=> array(
@@ -151,7 +151,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Get selected form plugin.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  boolean $only_name if return only plugin name.
 	 *  @return mixed             plugin name or all details of plugin
 	 */
@@ -173,7 +173,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Get API key.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 *  @return mixed  string of API key if configured, false otherwise
 	 */
 	public static function get_api_key() {
@@ -187,7 +187,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Add scheme to url if does not have already.
 	 *
-	 *  @since	0.1.0-alpha
+	 *  @since	1.0.0
 	 *  @param 	string $url    URL to check for scheme.
 	 *  @param 	string $scheme what scheme to use.
 	 *  @return string				 URL with scheme
@@ -199,7 +199,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Get plugin admin page full url or just base.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  array   $args      GET parameters add to url.
 	 *  @param  boolean $only_base return just base if true.
 	 *  @return string             plugin admin page url or base
@@ -240,7 +240,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Remove endpoint response from transient cache
 	 *
-	 *  @since 0.1.1-alpha
+	 *  @since 1.0.0
 	 *  @param string $key        key/name for transient.
 	 */
 	public static function delete_transient( $key = null ) {
@@ -263,7 +263,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Purge our transient/endpoint response cache
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function purge_cache() {
 		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
@@ -282,7 +282,7 @@ class Helper extends CRMServiceWP\Plugin {
 	/**
 	 *  Do full plugin reset.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	public static function reset() {
 		self::purge_cache();

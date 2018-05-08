@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-18 16:33:03
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:13:54
+ * @Last Modified time: 2018-05-07 15:58:15
  */
 
 namespace CRMServiceWP;
@@ -40,12 +40,12 @@ foreach  ( $form_plugins as $plugin ) {
 		continue;
 	}
 
-	$plugins_list[] = '<a href="' . $plugin['plugin_url'] . '">' . $plugin['name'] . '</a>';
+	$plugins_list[] = '<a href="' . $plugin['plugin_url'] . '">' . str_replace( ' (' . \esc_attr__( 'deactivated', 'crmservice' ) . ')', '', $plugin['name'] ) . '</a>';
 }
 
 // Make first step message if form plugin not active.
 if ( empty( $first_step['desc'] ) ) {
-	$first_step['desc'] = sprintf( esc_attr__( "Install one of the supported form plugins: %s and make your first form to get started.", 'crmservice' ), implode( ',', $plugins_list ) );
+	$first_step['desc'] = sprintf( esc_attr__( "Install or activate one of the supported form plugins: %s and make your first form to get started.", 'crmservice' ), implode( ', ', $plugins_list ) );
 }
 
 ?>

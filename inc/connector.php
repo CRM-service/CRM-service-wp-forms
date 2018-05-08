@@ -37,7 +37,14 @@ class CRMserviceConnector {
       $this->managers[$manager_name] = $this->initCrmManager($manager_name);
     }
 
-    $this->crm_session = $this->manager('session')->createSession($this->crm_apikey);
+    try {
+      $this->crm_session = $this->manager('session')->createSession($this->crm_apikey);
+    } catch(\SoapFault $e) {
+      // fail silently
+      set_error_handler('var_dump', 0); // Never called because of empty mask.
+      @trigger_error("");
+      restore_error_handler();
+    }
 
     if ( is_soap_fault( $this->crm_session ) ) {
       throw new CRMserviceConnectorException('CRMserviceConnector has SoapFault');
@@ -48,6 +55,8 @@ class CRMserviceConnector {
     try {
       $response = $this->callCrmMethod('session', 'destroySession', [$this->crm_session]);
     } catch(\Exception $_) {
+      // ignore silently
+    } catch( \TypeError $_ ) {
       // ignore silently
     }
   }
@@ -71,7 +80,11 @@ class CRMserviceConnector {
   public function getFieldsFor(string $module, string $locale = 'en_us') : array {
     $this->validateModule($module);
 
-    $raw_fields = $this->callCrmMethod('field', 'getCrmFields', [$module]);
+    try {
+      $raw_fields = $this->callCrmMethod('field', 'getCrmFields', [$module]);
+    } catch( \TypeError $_ ) {
+      return array();
+    }
     $fields = [];
 
     foreach($raw_fields as $rf) {
@@ -221,9 +234,17 @@ class CrmSoapClient extends \SoapClient {
       $this->__setSoapHeaders($options['headers']);
     }
 
-    $options['exceptions'] = false;
+    $options['exceptions'] = true;
+    $options['trace'] = 1;
 
-    parent::__construct($wsdl, $options);
+    try {
+      parent::__construct($wsdl, $options);
+    } catch(\SoapFault $e) {
+      // fail silently
+      set_error_handler('var_dump', 0); // Never called because of empty mask.
+      @trigger_error("");
+      restore_error_handler();
+    }
   }
 }
 

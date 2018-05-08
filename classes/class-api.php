@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-04-25 16:10:31
+ * @Last Modified time: 2018-05-08 10:53:20
  *
  * @package crmservice
  */
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for conector wrap.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class API extends CRMServiceWP\Plugin {
 
@@ -64,7 +64,7 @@ class API extends CRMServiceWP\Plugin {
 	/**
 	 *  Load CRM SOAP connector.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 */
 	private static function load_connector() {
 		include_once CRMServiceWP\Plugin::crmservice_base_path( 'inc/connector.php' );
@@ -73,7 +73,7 @@ class API extends CRMServiceWP\Plugin {
 	/**
 	 *  Call CRM SOAP API.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  string  $endpoint       what endpoint to call.
 	 *  @param  mixed   $data           data to send.
 	 *  @param  boolean $cache          if true, cache response.
@@ -122,11 +122,23 @@ class API extends CRMServiceWP\Plugin {
 
 		// Make request to get available modules.
 		if ( 'savedata' === $endpoint ) {
-			$data = $api->saveData( $data['module'], $data['data'] );
+			try {
+				$data = $api->saveData( $data['module'], $data['data'] );
+			} catch ( \CRMservice\CRMserviceConnectorException $e ) {
+				return false;
+			}
 		} else if ( 'getfields' === $endpoint ) {
-			$data = $api->getFieldsFor( $data, self::$helper->get_site_locale() );
+			try {
+				$data = $api->getFieldsFor( $data, self::$helper->get_site_locale() );
+			} catch ( \CRMservice\CRMserviceConnectorException $e ) {
+				return false;
+			}
 		} else {
-			$data = $api->getModules();
+			try {
+				$data = $api->getModules();
+			} catch ( \CRMservice\CRMserviceConnectorException $e ) {
+				return false;
+			}
 		}
 
 		// If response should be cached, cache it.
@@ -140,7 +152,7 @@ class API extends CRMServiceWP\Plugin {
 	/**
 	 *  Get cached API response data.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  string  $cache_key what is cache key to get data for.
 	 *  @return  mixed             cached data, false if no cached data
 	 */

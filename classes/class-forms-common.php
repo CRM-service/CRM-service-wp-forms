@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:41:22
+ * @Last Modified time: 2018-05-08 10:53:17
  *
  * @package crmservice
  */
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  *  Class for form plugin integration loader and common tasks.
  *
- *  @since 0.1.0-alpha
+ *  @since 1.0.0
  */
 class FormsCommon extends CRMServiceWP\Plugin {
 	/**
@@ -49,7 +49,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Fire it up!
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public function __construct() {
 		// Get instance of helper.
@@ -89,6 +89,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 				// Hook to submit.
 				\add_action( self::$form_plugin['submit_hook'], array( __CLASS__, 'send_form_submission' ), 50, 4 );
 				\add_action( 'crmservice_maybe_resend', array( __CLASS__, 'resend_failed_submissions' ) );
+				\add_action( 'init', array( __CLASS__, 'resend_failed_submissions' ) );
 			}
 		}
 	} // end __construct
@@ -96,7 +97,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Add our custom WP REST API endpoints.
 	 *
-	 *  @since 0.1.0-alpha
+	 *  @since 1.0.0
 	 */
 	public static function add_rest_endpoints() {
 		\add_action( 'rest_api_init', function () {
@@ -124,7 +125,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  Get array of forms.
 	 *  Key is form ID depending on selected form plugin, value is form title.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @return array  list of forms
 	 */
 	public static function get_forms_array() {
@@ -135,7 +136,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Get fields for spesified form.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param  integer $form_id     form id to get fields.
 	 *  @param  boolean $form_plugin form plugin, befaults to active plugin.
 	 *  @return mixed                false if no fields, otherwise array of fields and required fields.
@@ -169,7 +170,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Function for REST API endpoint to get form fields.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param 	object $request WP REST API request object.
 	 *  @return mixed           REST API response
 	 */
@@ -187,7 +188,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Function to get CRM module fields.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param 	object $module WP REST API request object.
 	 *  @return mixed           REST API response
 	 */
@@ -233,7 +234,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Function for REST API endpoint to get CRM module fields.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 *  @param 	object $request WP REST API request object.
 	 *  @return mixed           REST API response
 	 */
@@ -252,7 +253,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  CRM-service expects some fields in correct format, so do some formatting
 	 *  if needed.
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  boolean $type  crm field type.
 	 *  @param  string  $value field value.
 	 *  @return mixed         formatted field value
@@ -370,7 +371,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  Contact Form 7, see https://plugins.svn.wordpress.org/contact-form-7/trunk/modules/flamingo.php
 	 *  var1 is array result of send
 	 *
-	 *  @since  0.1.1-alpha
+	 *  @since  1.0.0
 	 *  @param  mixed  $var1 variable from form plugin hook.
 	 *  @param  mixed  $var2 variable from form plugin hook.
 	 *  @param  mixed  $var3 variable from form plugin hook.
@@ -435,7 +436,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	/**
 	 *  Try to resend failed submission sends to CRM.
 	 *
-	 *  @since  1.1.1-neta
+	 *  @since  1.0.0
 	 */
 	public static function resend_failed_submissions() {
 		// Get failed submissions.

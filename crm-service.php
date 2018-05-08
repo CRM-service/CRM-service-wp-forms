@@ -1,17 +1,17 @@
 <?php
 /**
- * Desc.
+ * Integration between CRM-service and WordPress.
  *
  * @package CRMServiceWP
  *
  * Plugin Name:				CRM-service WP Forms
  * Plugin URI:
- * Description: 			Integration between CRM-service and WordPress
+ * Description: 			Integration between CRM-service and WordPress.
  * Author: 						crmservice
  * Author URI:				https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version: 					1.1.2-beta
+ * Version: 					1.0.0
  * Requires at least:	4.9.4
  * Tested up to: 			4.9.4
  *
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-07 15:43:14
+ * @Last Modified time: 2018-05-08 10:54:47
  */
 
 namespace CRMServiceWP;
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-	define( 'CRMSERVICEWP_VERSION', '1.1.1-beta' );
+	define( 'CRMSERVICEWP_VERSION', '1.0.0' );
 
 	/**
 	 *  Main class for plugin.
@@ -50,7 +50,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 		/**
 		 *  Wrapper function to get path of this plugin.
 		 *
-		 *  @since  0.1.0-alpha
+		 *  @since  1.0.0
 		 *  @return string 	path to plugin
 		 */
 		public static function crmservice_base_path( $file = null ) {
@@ -66,7 +66,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 		/**
 		 *  Run the plugin.
 		 *
-		 *  @since  0.1.0-alpha
+		 *  @since  1.0.0
 		 */
 		public static function load() {
 
@@ -94,7 +94,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 		/**
 		 *  Load plugin textdomain
 		 *
-		 *  @since  0.1.0-alpha
+		 *  @since  1.0.0
 		 */
 		public static function load_textdomain() {
 			$loaded = \load_plugin_textdomain( 'crmservice', false, dirname( \plugin_basename( __FILE__ ) ) . '/language/' );
@@ -106,7 +106,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 		/**
 		 *  Enqueue our css and js if user is in dashboard
 		 *
-		 *  @since  0.1.0-alpha
+		 *  @since  1.0.0
 		 */
 		public static function enqueue_admin() {
 			$screen = \get_current_screen();
@@ -128,7 +128,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 	/**
 	 *  Schedule maybe resend failed submissions sends.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 */
 	function plugin_activation() {
 		if ( ! \wp_next_scheduled( 'crmservice_maybe_resend' ) ) {
@@ -139,7 +139,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 	/**
 	 *  Remove cron schedules.
 	 *
-	 *  @since  1.1.1-beta
+	 *  @since  1.0.0
 	 */
 	function plugin_deactivation() {
 		\wp_clear_scheduled_hook( 'crmservice_maybe_resend' );
@@ -148,7 +148,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 	/**
 	 *  Start the plugin.
 	 *
-	 *  @since  0.1.0-alpha
+	 *  @since  1.0.0
 	 */
 	function load_plugin() {
     $pg = new Plugin();
