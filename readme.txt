@@ -1,5 +1,5 @@
 === CRM-service WP Forms  ===
-Contributors: 
+Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
 Tested up to: 4.9.5
