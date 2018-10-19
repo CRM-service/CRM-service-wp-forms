@@ -12,8 +12,8 @@
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Version:           1.0.0
- * Requires at least: 4.9.4
- * Tested up to:      4.9.4
+ * Requires at least: 4.9
+ * Tested up to:      4.9.8
  *
  * Text Domain: crmservice
  * Domain Path: /languages
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-11 09:52:55
+ * @Last Modified time: 2018-10-19 09:59:13
  */
 
 namespace CRMServiceWP;
