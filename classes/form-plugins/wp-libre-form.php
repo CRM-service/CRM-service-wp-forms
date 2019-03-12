@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:53:27
+ * @Last Modified time: 2019-03-12 10:57:46
  *
  * @package crmservice
  */
@@ -213,6 +213,10 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 
 		// Get old fails if one.
 		$fails = \get_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', true );
+		if ( ! is_array( $fails ) ) {
+			$fails = array();
+		}
+
 		$fails[] = date( 'Y-m-d H:i:s' );
 
 		\update_post_meta( $wplf_data->submission_id, '_crmservice_send_fail', $fails );

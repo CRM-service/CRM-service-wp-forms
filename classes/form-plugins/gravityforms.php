@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:52:37
+ * @Last Modified time: 2019-03-12 10:57:29
  *
  * @package crmservice
  */
@@ -180,6 +180,10 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	public static function set_send_fail( $entry ) {
 		// Get old fails if one.
 		$fails = \gform_get_meta( (int)$entry['id'], '_crmservice_send_fail' );
+		if ( ! is_array( $fails ) ) {
+			$fails = array();
+		}
+
 		$fails[] = date( 'Y-m-d H:i:s' );
 
 		\gform_update_meta( (int)$entry['id'], '_crmservice_send_fail', $fails );
