@@ -11,9 +11,9 @@
  * Author URI:        https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 4.9
- * Tested up to:      5.0.0
+ * Tested up to:      5.1
  *
  * Text Domain: crmservice
  * Domain Path: /languages
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-11-02 10:13:13
+ * @Last Modified time: 2019-03-12 11:11:37
  */
 
 namespace CRMServiceWP;
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-  define( 'CRMSERVICEWP_VERSION', '1.0.0' );
+  define( 'CRMSERVICEWP_VERSION', '1.0.1' );
 
   /**
    *  Main class for plugin.
