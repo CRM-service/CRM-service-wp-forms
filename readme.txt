@@ -57,6 +57,7 @@ All notable changes to this project will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 = 1.1.0 =
+Release date: 2019-06-10
 * Added: Feature to support sending pre-filled fields within form data
 * Added: Support Gravity Forms sub-fields (eg. name, address)
 * Fix: Sort module fields in alphabetical order
