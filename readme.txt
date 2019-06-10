@@ -2,9 +2,9 @@
 Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
-Tested up to: 5.1
+Tested up to: 5.2
 Requires PHP: 7.0
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -52,4 +52,22 @@ If you need a support for spesific form plugin, [contact us](https://crm-service
  
 == Changelog ==
 
-See our [GitHub repository](https://github.com/CRM-service/CRM-service-wp-forms).
+All notable changes to this project will be documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+= 1.1.0 =
+* Added: Feature to support sending pre-filled fields within form data
+* Added: Support Gravity Forms sub-fields (eg. name, address)
+* Fix: Sort module fields in alphabetical order
+* Fix: Do not show Gravity Forms section -field when mapping fields
+* Fix: Order Gravity Forms fields in same order than in form 
+* Improved: Styles on admin when adding new integration
+
+= 1.0.1 =
+Release date: 2019-03-11
+* Fix: In some situations re-sending previously failed submissions failed, it's fixed on this version
+
+= 1.0.0 =
+Release date: 2018-05-11
+* Initial release

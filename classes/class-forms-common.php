@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-03-12 11:10:19
+ * @Last Modified time: 2019-06-10 12:06:29
  *
  * @package crmservice
  */
@@ -198,7 +198,14 @@ class FormsCommon extends CRMServiceWP\Plugin {
 			return false;
 		}
 
-		return CRMServiceWP\API\API::call_api( 'getfields', $module, true, 300 );
+		$fields = CRMServiceWP\API\API::call_api( 'getfields', $module, true, 300 );
+
+		// alphabetic order by label
+		usort( $fields, function( $a, $b ) {
+			return strcmp( $a->label, $b->label );
+		} );
+
+		return $fields;
 	} // end get_form_fields_rest
 
 	public static function get_integration_count_for_form( $form_id = null ) {
@@ -356,6 +363,43 @@ class FormsCommon extends CRMServiceWP\Plugin {
 		return $form_field_connections;
 	} // end get_integration_field_connections
 
+	public static function get_prefilled_fields_for_send( $form_id = 0 ) {
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$query = new \WP_Query( array(
+			'post_type'   						=> 'crmservice_form',
+			'post_status' 						=> 'publish',
+			'posts_per_page'         	=> 1,
+			'meta_query'							=> array(
+				'relation'	=> 'AND',
+				array(
+					'key'		=> '_crmservice_form',
+					'value'	=> $form_id,
+				),
+				array(
+					'key'			=> '_crmservice_module',
+					'value'		=> '0',
+					'compare'	=> '!=',
+				),
+			),
+			'no_found_rows'          	=> true,
+			'cache_results'          	=> true,
+			'update_post_term_cache' 	=> false,
+			'update_post_meta_cache' 	=> true,
+		) );
+
+		$fields = false;
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) { $query->the_post();
+				$fields = \get_post_meta( get_the_id(), '_crmservice_static_fields', true );
+			}
+		}
+
+		return $fields;
+	} // end get_prefilled_fields_for_send
+
 	/**
 	 *  Send form submission to crm.
 	 *
@@ -382,6 +426,7 @@ class FormsCommon extends CRMServiceWP\Plugin {
 		$bail = false;
 		$send_data = self::$form_plugin_instance->map_fields_for_send( $var1, $var2 );
 		$send_module = self::$form_plugin_instance->get_module_for_send( $var1, $var2 );
+		$prefilled_fields = self::$form_plugin_instance->get_prefilled_fields_for_send( $var1, $var2 );
 
 		if ( ! $send_data ) {
 			$bail = true; // bail because no data, but true for form OK.
@@ -403,6 +448,11 @@ class FormsCommon extends CRMServiceWP\Plugin {
 		if ( $bail ) {
 			self::$form_plugin_instance->set_send_fail( $var1 );
 			return true;
+		}
+
+		// Maybe combine from data and prefilled fields
+		if ( ! empty( $prefilled_fields ) ) {
+			$send_data = array_merge( $prefilled_fields, $send_data );
 		}
 
 		// Maybe format field if needed.

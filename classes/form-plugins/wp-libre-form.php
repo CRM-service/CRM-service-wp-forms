@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-03-12 10:57:46
+ * @Last Modified time: 2019-05-27 12:42:40
  *
  * @package crmservice
  */
@@ -177,6 +177,27 @@ class FormsWPLibreForm extends CRMServiceWP\Plugin {
 		// Get and return module.
 		return CRMServiceWP\Forms\Common\FormsCommon::get_module_for_send( $wplf_data->form_id );
 	} // end get_module_for_send
+
+	/**
+	 *  Get pre-filled fields to send with form data.
+	 *
+	 *  @since  1.1.0
+	 *  @param  object $contact_form CF/ form object
+	 *  @param  array $result result of send
+	 *  @return mixed             module name for send, false if not configured.
+	 */
+	public static function get_prefilled_fields_for_send( $wplf_data = null ) {
+		if ( ! $wplf_data ) {
+			return false; // no wplf data for some reason, bail.
+		}
+
+		if ( ! $wplf_data->ok ) {
+			return false; // wplf send was not ok so we don't want to send either, bail.
+		}
+
+		// Get and return module.
+		return CRMServiceWP\Forms\Common\FormsCommon::get_prefilled_fields_for_send( $wplf_data->form_id );
+	} // end get_prefilled_fields_for_send
 
 	/**
 	 *  Set timestamp of succesfull crm send.
