@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:53:18
+ * @Last Modified time: 2019-05-27 14:29:52
  *
  * @package crmservice
  */
@@ -138,6 +138,7 @@ class CPT extends CRMServiceWP\Plugin {
 
 		// Get active form plugin.
 		$form_plugin = self::$helper->get_form_plugin();
+		$form_plugin_active = self::$helper->check_if_form_plugin_active();
 		if ( $form_plugin ) {
 			$new_form_url = \admin_url( $form_plugin['new_url'] );
 		}
@@ -149,6 +150,7 @@ class CPT extends CRMServiceWP\Plugin {
 			$form_fields = CRMServiceWP\Forms\Common\FormsCommon::get_form_fields( (int) $saved_form );
 			$module_fields = CRMServiceWP\Forms\Common\FormsCommon::get_module_fields( $saved_module );
 			$saved_conections = get_post_meta( (int) $post->ID, '_crmservice_connections', true );
+			$saved_static_fields = get_post_meta( (int) $post->ID, '_crmservice_static_fields', true );
 		}
 
 		// Actually make the view.
@@ -204,6 +206,12 @@ class CPT extends CRMServiceWP\Plugin {
 		// Save added field connections.
 		if ( isset( $_POST['crmservice_connections'] ) ) {
 			\update_post_meta( $post_id, '_crmservice_connections', \wp_unslash( $_POST['crmservice_connections'] ) );
+		}
+
+		// Save added field connections.
+		if ( isset( $_POST['crmservice_static_fields'] ) && isset( $_POST['crmservice_static_fields_values'] ) ) {
+			$crmservice_static_fields = array_combine( \wp_unslash( $_POST['crmservice_static_fields'] ), \wp_unslash( $_POST['crmservice_static_fields_values'] ) );
+			\update_post_meta( $post_id, '_crmservice_static_fields', array_filter( $crmservice_static_fields ) );
 		}
 
 		// Set post title to random int if no title otherwise.

@@ -11,9 +11,9 @@
  * Author URI:        https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version:           1.0.0
- * Requires at least: 4.9.4
- * Tested up to:      4.9.4
+ * Version:           1.1.0
+ * Requires at least: 4.9
+ * Tested up to:      5.2
  *
  * Text Domain: crmservice
  * Domain Path: /languages
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-11 09:52:55
+ * @Last Modified time: 2019-05-27 14:53:07
  */
 
 namespace CRMServiceWP;
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-  define( 'CRMSERVICEWP_VERSION', '1.0.0' );
+  define( 'CRMSERVICEWP_VERSION', '1.0.1' );
 
   /**
    *  Main class for plugin.
@@ -111,11 +111,11 @@ if ( ! class_exists( 'Plugin' ) ) :
     public static function enqueue_admin() {
       $screen = \get_current_screen();
 
-      \wp_enqueue_style( 'crmservice', \plugins_url( 'assets/admin/main.css', __FILE__ ), array(), '0.1.0' );
+      \wp_enqueue_style( 'crmservice', \plugins_url( 'assets/admin/main.css', __FILE__ ), array(), '1.1.0' );
 
       if ( 'post' === $screen->base || 'edit' === $screen->base ) {
         if ( 'crmservice_form' === $screen->post_type ) {
-          \wp_enqueue_script( 'crmservice', \plugins_url( 'assets/admin/metabox.js', __FILE__ ), array(), '0.1.0', true );
+          \wp_enqueue_script( 'crmservice', \plugins_url( 'assets/admin/metabox.js', __FILE__ ), array(), '1.1.0', true );
           \wp_localize_script( 'crmservice', 'crmservice', array(
             'root'      => \esc_url_raw( \rest_url() ),
             'nonce'     => \wp_create_nonce( 'wp_rest' ),

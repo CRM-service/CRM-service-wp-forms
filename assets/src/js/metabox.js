@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-04 16:36:49
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-04-18 16:28:39
+* @Last Modified time: 2019-05-27 14:28:59
 */
 
 jQuery( document ).ready(function( $ ) {
@@ -14,11 +14,6 @@ jQuery( document ).ready(function( $ ) {
   	size: 'small',
   	placement: 'top-start'
 	});
-
-	// Selectize options
-	// $('select[name="crmservice_module"]').selectize();
-	// $('select[name="crmservice_form"]').selectize();
-	// $('.crmservice-metabox-connections-wrap .row-field .col-module select').selectize();
 
 	// Defaults.
 	var form_fields = [];
@@ -44,9 +39,9 @@ jQuery( document ).ready(function( $ ) {
   }
 
 	// Listen module field select changes.
-	$(document).on('change', '.crmservice-metabox-connections-wrap .row-field .col-module select', function() {
+	$(document).on('change', '#crmservice-integration-settings .row-field .col-module select', function() {
 		$(this).parent('.col-module').find('input').val( this.value ); // clone value to hidden field
-		$('.crmservice-metabox-connections-wrap .row-field .col-module select option').attr('disabled', false); // de-disable all options
+		$('#crmservice-integration-settings .row-field .col-module select option').attr('disabled', false); // de-disable all options
 		disable_module_fields_used(); // re-disable selected fields from select fields
 	});
 
@@ -72,6 +67,7 @@ jQuery( document ).ready(function( $ ) {
 	// Listen module select change and get available fields for selected module.
 	$(document).on('change', 'select[name="crmservice_module"]', function() {
 		$('.crmservice-metabox-connections-wrap .col-module select').empty().append('<option>Select</option>');
+		$('.crmservice-metabox-static-fields-wrap .col-module select').empty().append('<option>Select</option>');
 
 		$.ajax({
 		   type: 'GET',
@@ -108,17 +104,49 @@ jQuery( document ).ready(function( $ ) {
 		}
 	});
 
+	// Listen static field add and clone from base
+	$('.crmservice-metabox-static-fields-wrap .row-footer button').on('click', function(e) {
+		e.preventDefault();
+
+		x = $('.crmservice-metabox-static-fields-wrap .row-field').length;
+		x++;
+
+		row = $('.crmservice-metabox-static-fields-wrap .row-field-base').clone();
+		row = $(row);
+
+		row.removeAttr('style').removeClass('row-field-base');
+		row.find('select[name="crmservice_static_fields[0]"]').attr( 'name', 'crmservice_static_fields[' + x + ']' );
+		row.find('input[name="crmservice_static_fields[0]"]').attr( 'name', 'crmservice_static_fields[' + x + ']' );
+		row.find('input[name="crmservice_static_fields_values[0]"]').attr( 'name', 'crmservice_static_fields_values[' + x + ']' );
+
+
+		$('.crmservice-metabox-static-fields-wrap .row-footer').before(row);
+	});
+
+	// Listen module field change
+	$(document).on('change', '#crmservice-integration-settings .col-module select', function() {
+		$('input[name="' + $(this).attr('name') + '"]').val( this.value );
+	});
+
+	// Listen static fields remove
+	$(document).on('click', '.crmservice-metabox-static-fields-wrap .row-field button.delete', function(e) {
+		e.preventDefault();
+		$(this).closest('.row-field').remove();
+	});
+
 	// Function to disable module fields used elsewhere.
 	function disable_module_fields_used() {
-		$('.crmservice-metabox-connections-wrap .row-field .col-module select').each(function() {
+		$('#crmservice-integration-settings .row-field .col-module select').each(function() {
 			if ( '0' !== this.value ) {
-				$('.crmservice-metabox-connections-wrap .row-field .col-module select option[value="' + this.value + '"]').attr('disabled', 'true');
+				$('#crmservice-integration-settings .row-field .col-module select option[value="' + this.value + '"]').attr('disabled', 'true');
 			}
 		});
 	} // end disable_module_fields_used
 
 	// Make form field rows.
 	function populate_form_fields() {
+		$('.crmservice-metabox-connections-wrap').show();
+		$('.crmservice-metabox-static-fields-wrap').show();
 
 		x = 0;
 		$.each( form_fields, function(i, item) {
@@ -139,9 +167,17 @@ jQuery( document ).ready(function( $ ) {
 
 	// Set module field select options.
 	function populate_module_fields() {
+		$('.crmservice-metabox-connections-wrap').show();
+		$('.crmservice-metabox-static-fields-wrap').show();
 
 		$.each( module_fields, function(i, item) {
 	    $('.crmservice-metabox-connections-wrap .col-module select').append( $('<option>', {
+	        value: item.name,
+	        text: item.label + ' (' + item.type + ')', // TODO: translate type
+	        'data-type': item.type
+	    }));
+
+	    $('.crmservice-metabox-static-fields-wrap .col-module select').append( $('<option>', {
 	        value: item.name,
 	        text: item.label + ' (' + item.type + ')', // TODO: translate type
 	        'data-type': item.type

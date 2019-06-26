@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-05 16:24:26
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2018-05-07 15:35:11
+* @Last Modified time: 2019-05-24 20:02:08
 */
 
 @import 'jeet/scss/index';
@@ -28,8 +28,46 @@ ul#adminmenu {
 	}
 }
 
+.crmservice-metabox-settings-wrap,
+.crmservice-metabox-connections-wrap,
+.crmservice-metabox-static-fields-wrap {
+  .select-wrapper {
+    position: relative;
+
+    &::before {
+      content: "\f347";
+      font-family: dashicons;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 10%;
+      height: 100%;
+      text-align: center;
+      font-size: 20px;
+      line-height: 35px;
+      color: #ddd;
+      pointer-events: none;
+    }
+
+    &:hover::before {
+      color:  #aaa;
+    }
+
+    select {
+      height: 35px;
+      background-color: #fff;
+      color: #444;
+      border: 1px solid #ddd;
+      box-shadow: 0 5px 10px rgba(0,0,0,.025);
+      -webkit-appearance: button;
+      appearance: button;
+      outline: none;
+    }
+  }
+}
+
 .crmservice-metabox-settings-wrap {
-	margin-bottom: 25px;
+	margin-bottom: 40px;
 
 	.row {
 		@include clearfix;
@@ -38,7 +76,8 @@ ul#adminmenu {
 			@include column(1/2);
 
 			p.label {
-				font-size: 1.25em;
+        color: #222;
+				font-size: 1.3em;
 				font-weight: 600;
 			}
 
@@ -49,28 +88,42 @@ ul#adminmenu {
 	}
 }
 
-.crmservice-metabox-connections-wrap {
+.crmservice-metabox-connections-wrap,
+.crmservice-metabox-static-fields-wrap {
+  h3 {
+    color: #222;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
 	.row {
 		@include clearfix;
 
 		&.row-head {
+      border-bottom: 1px solid #ddd;
+      padding: 0 15px;
+
 			p {
-				font-size: 1.25em;
-				font-weight: 600;
+				font-size: 1.15em;
+        font-weight: 500;
 			}
 		}
 
 		&.row-field {
-			border-top: 1px solid lightgrey;
-			padding: 15px 0;
+			//border-bottom: 1px solid #ddd;
+			padding: 15px;
 
-			&:last-of-type {
-				padding-bottom: 0;
-			}
+      &:nth-child(even) {
+        background-color: #fbfbfb;
+      }
+
+      &:last-child {
+        border-bottom: 1px solid #ddd;
+      }
 
 			p {
 				margin: 0;
-				margin-top: 4px;
+				margin-top: 7px;
 
 				&.select-options {
 					display: none; // do not display on default
@@ -84,16 +137,63 @@ ul#adminmenu {
 				}
 			}
 
-			select {
+			select,
+      input {
 				margin: 0;
 				width: 100%;
+        height: 35px;
 			}
-		}
+    }
 
 		.col {
 			@include column(1/2);
 		}
 	}
+}
+
+.crmservice-metabox-static-fields-wrap {
+  margin-top: 40px;
+
+  .row {
+    &.row-field {
+      .col-value {
+        position: relative;
+
+        button.delete {
+          border: none;
+          background: transparent;
+          margin: 0;
+          padding: 0;
+          position: absolute;
+          color: #ddd;
+          top: 0;
+          right: 0;
+          width: 10%;
+          height: 100%;
+          text-align: center;
+          font-size: 20px;
+          line-height: 35px;
+          cursor: pointer;
+
+          span {
+            height: 100%;
+            font-size: 20px;
+            line-height: 35px;
+          }
+
+          &:hover {
+            span {
+              color: #E53935;
+            }
+          }
+        }
+      }
+    }
+
+    &.row-footer {
+      margin-top: 15px;
+    }
+  }
 }
 
 .crmservice-settings {

@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:52:40
+ * @Last Modified time: 2019-05-27 12:42:12
  *
  * @package crmservice
  */
@@ -214,6 +214,39 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 	} // end get_module_for_send
 
 	/**
+	 *  Get pre-filled fields to send with form data.
+	 *
+	 *  @since  1.1.0
+	 *  @param  object $contact_form CF/ form object
+	 *  @param  array $result result of send
+	 *  @return mixed             module name for send, false if not configured.
+	 */
+	public static function get_prefilled_fields_for_send( $var1 = false, $var2 = false ) {
+		$result = self::_get_result_var( $var1, $var2 );
+		if ( ! $result ) {
+			return false;
+		}
+
+		// If is resend call.
+		if ( isset( $result['resend'] ) ) {
+			// Okay, was a resend call. Get the data for handling.
+			$result = $result['data'][0];
+
+			// Get form.
+			$form = \WPCF7_ContactForm::find( array( 'name' => $result->channel ) );
+			if ( empty( $form ) ) {
+				return; // Can not get form, bail.
+			}
+
+			// Make fake result.
+			$result = array();
+			$result['contact_form_id'] = $form[0]->id();
+		}
+
+		return CRMServiceWP\Forms\Common\FormsCommon::get_prefilled_fields_for_send( $result['contact_form_id'] );
+	} // end get_prefilled_fields_for_send
+
+	/**
 	 *  Set timestamp of succesfull crm send.
 	 *
 	 *  @since 1.0.0
@@ -266,6 +299,10 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 
 		// Get old fails if one.
 		$fails = \get_post_meta( $result['flamingo_inbound_id'], '_crmservice_send_fail', true );
+		if ( ! is_array( $fails ) ) {
+			$fails = array();
+		}
+
 		$fails[] = date( 'Y-m-d H:i:s' );
 
 		\update_post_meta( $result['flamingo_inbound_id'], '_crmservice_send_fail', $fails );

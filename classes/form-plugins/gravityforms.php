@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:52:37
+ * @Last Modified time: 2019-06-10 12:11:54
  *
  * @package crmservice
  */
@@ -87,11 +87,52 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 
 		if ( ! empty( $form['fields'] ) ) {
 			foreach ( $form['fields'] as $field_id => $field ) {
-				$fields[ $field->id ] = $field->label;
-
-				if ( $field->isRequired ) {
-					$required_fields[ $field->id ] = $field->label;
+				// skip sections
+				if ( 'section' === $field['type'] ) {
+					continue;
 				}
+
+				// if field has sub-fields, loop those
+				if ( isset( $field['inputs'] ) && is_array( $field['inputs'] ) ) {
+					foreach ( $field['inputs'] as $input_id => $input ) {
+						// if sub-field is hidden (=not in use), skip it
+						if ( isset( $input['isHidden'] ) && true === $input['isHidden'] ) {
+							continue;
+						}
+
+						// add sub-field to fields, but prepend with main label
+						$fields[ $input['id'] ] = array(
+							'label' => $field->label . ': ' . $input['label'],
+							'order'	=> $field_id . '.' . $input_id, // see few lines below for usort and it's comment
+						);
+
+						// if main is reauired, so is this sub-field
+						if ( $field->isRequired ) {
+							$required_fields[ $input['id'] ] = $field->label . ': ' . $input['label'];
+						}
+					}
+				} else {
+					// field has no sub-fields, add to array
+					$fields[ (string) $field->id ] = array(
+							'label' => $field->label,
+							'order'	=> $field_id, // see few lines below for usort and it's comment
+						);
+
+					if ( $field->isRequired ) {
+						$required_fields[ (string) $field->id ] = $field->label;
+					}
+				}
+			}
+		}
+
+		/**
+		 *  Sort fields in the order they appear in GF.
+		 *  Field ID is just identifier and not trustworthy for setting order, so we need to
+		 *  use the order that GF provided fields in.
+		 */
+		if ( ! empty( $fields ) ) {
+			foreach ( $fields as $field_id => $field ) {
+				$fields[ $field_id ] = $field['label'];
 			}
 		}
 
@@ -162,6 +203,24 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	} // end get_module_for_send
 
 	/**
+	 *  Get pre-filled fields to send with form data.
+	 *
+	 *  @since  1.1.0
+	 *  @param  object $contact_form CF/ form object
+	 *  @param  array $result result of send
+	 *  @return mixed             module name for send, false if not configured.
+	 */
+	public static function get_prefilled_fields_for_send( $entry = null, $form = null ) {
+		if ( ! $entry ) {
+			return false;
+		}
+
+		$form_id = (int)$entry['form_id'];
+
+		return CRMServiceWP\Forms\Common\FormsCommon::get_prefilled_fields_for_send( $form_id );
+	} // end get_prefilled_fields_for_send
+
+	/**
 	 *  Set timestamp of succesfull crm send.
 	 *
 	 *  @since 1.0.0
@@ -180,6 +239,10 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	public static function set_send_fail( $entry ) {
 		// Get old fails if one.
 		$fails = \gform_get_meta( (int)$entry['id'], '_crmservice_send_fail' );
+		if ( ! is_array( $fails ) ) {
+			$fails = array();
+		}
+
 		$fails[] = date( 'Y-m-d H:i:s' );
 
 		\gform_update_meta( (int)$entry['id'], '_crmservice_send_fail', $fails );
