@@ -91,6 +91,7 @@ class CRMserviceConnector {
       if (!$this->isFieldAllowed($rf)) continue;
 
       $field = new \StdClass();
+      $field->uitype = $rf->uitype;
       $field->label_orig = $field->label = $rf->label;
       $label_translations = \json_decode($rf->translations);
 
