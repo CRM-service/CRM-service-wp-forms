@@ -18,7 +18,7 @@ class CRMserviceConnector {
   private $crm_session;
   private $crm_managers = [];
   private $enabled_modules = ['Leads', 'Potentials'];
-  private $enabled_uitypes = [1 => 'String', 2 => 'String', 5 => 'Date', 7 => 'Number', 9 => 'Percent', 11 => 'Phone', 13 => 'Email', 15 => 'Select', 16 => 'Select', 17 => 'Website', 19 => 'String', 20 => 'String', 21 => 'String', 22 => 'String', 24 => 'Address', 33 => 'MultiSelect', 56 => 'Checkbox', 63 => 'Time', 792 => 'DateTime', 53 => 'Number', 700 => 'Number', 702 => 'Number', 704 => 'Number', ];
+  private $enabled_uitypes = [1 => 'String', 2 => 'String', 5 => 'Date', 7 => 'Number', 9 => 'Percent', 11 => 'Phone', 13 => 'Email', 15 => 'Select', 16 => 'Select', 17 => 'Website', 19 => 'String', 20 => 'String', 21 => 'String', 22 => 'String', 24 => 'Address', 33 => 'MultiSelect', 56 => 'Checkbox', 63 => 'Time', 792 => 'DateTime', 53 => 'Number', 700 => 'Number', 702 => 'Number', 704 => 'Number', 101 => 'Number', ];
 
   public function __construct(string $url, string $api_key) {
 
