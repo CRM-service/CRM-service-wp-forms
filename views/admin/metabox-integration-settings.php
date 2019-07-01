@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 14:10:28
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-06-07 10:22:24
+ * @Last Modified time: 2019-07-01 15:30:49
  *
  * @package crmservice
  */
@@ -84,11 +84,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="col col-module">
 			<div class="select-wrapper">
 				<select name="module_field">
-					<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+					<option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 				</select>
 			</div>
 			<input type="hidden" name="module_field" value="0" />
 			<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+			<p class="uitype-user-relation"><?php \esc_attr_e( 'Field is for user relation and value needs to be valid user ID.', 'crmservice' ); ?></p>
 		</div>
 	</div>
 
@@ -107,16 +108,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php if ( ! empty( $module_fields ) ) : ?>
 						<div class="select-wrapper">
 							<select name="crmservice_connections[<?php echo $connection_id; ?>][module_field]">
-								<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+								<option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 
 								<?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
-									<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" <?php if ( isset( $connection['module_field'] ) && $connection['module_field'] === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
+									<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" data-uitype="<?php echo $module_field->uitype; ?>" <?php if ( isset( $connection['module_field'] ) && $connection['module_field'] === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
 								<?php endforeach; ?>
 							</select>
 						</div>
 						<input type="hidden" name="crmservice_connections[<?php echo $connection_id; ?>][module_field]" value="<?php if ( isset( $connection['module_field'] ) ) { echo $connection['module_field']; } ?>" />
 
 						<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+						<p class="uitype-user-relation"><?php \esc_attr_e( 'Field is for user relation and value needs to be valid user ID.', 'crmservice' ); ?></p>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -141,20 +143,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="select-wrapper">
 				<?php if ( ! empty( $module_fields ) ) : ?>
 					<select name="crmservice_static_fields[0]">
-						<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+						<option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 
 						<?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
-							<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" ><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
+							<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>"  data-uitype="<?php echo $module_field->uitype; ?>" ><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
 						<?php endforeach; ?>
 					</select>
 				<?php else : ?>
 					<select name="crmservice_static_fields[0]">
-						<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+						<option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 					</select>
 				<?php endif; ?>
 				<input type="hidden" name="crmservice_static_fields[0]" value="" />
 			</div>
 			<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+			<p class="uitype-user-relation"><?php \esc_attr_e( 'Field is for user relation and value needs to be valid user ID.', 'crmservice' ); ?></p>
 		</div>
 		<div class="col col-value">
 			<input type="text" name="crmservice_static_fields_values[0]" value="" />
@@ -170,15 +173,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php if ( ! empty( $module_fields ) ) : ?>
 						<div class="select-wrapper">
 							<select name="crmservice_static_fields[<?php echo $field_id; ?>]">
-								<option value="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
+								<option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 
 								<?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
-									<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" <?php if ( $field_id === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
+									<option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>"  data-uitype="<?php echo $module_field->uitype; ?>" <?php if ( $field_id === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
 								<?php endforeach; ?>
 							</select>
 							<input type="hidden" name="crmservice_static_fields[<?php echo $field_id; ?>]" value="<?php echo $field_id; ?>" />
 						</div>
 						<p class="select-options"><?php \esc_attr_e( 'Possible values:', 'crmservice' ); ?> <span></span></p>
+						<p class="uitype-user-relation"><?php \esc_attr_e( 'Field is for user relation and value needs to be valid user ID.', 'crmservice' ); ?></p>
 					<?php endif; ?>
 				</div>
 				<div class="col col-value">
