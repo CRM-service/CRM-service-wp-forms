@@ -2,7 +2,7 @@
 * @Author: Timi Wahalahti
 * @Date:   2018-04-04 16:36:49
 * @Last Modified by:   Timi Wahalahti
-* @Last Modified time: 2019-05-27 14:28:59
+* @Last Modified time: 2019-07-01 15:28:52
 */
 
 jQuery( document ).ready(function( $ ) {
@@ -34,6 +34,7 @@ jQuery( document ).ready(function( $ ) {
 			},
 			success: function(data) {
 				module_fields = data;
+				maybe_show_module_field_notices();
 			}
 		});
   }
@@ -85,10 +86,11 @@ jQuery( document ).ready(function( $ ) {
 	});
 
 	// Listen module field selection changes and list options below if field type is select or multiselect.
-	$(document).on('change', '.crmservice-metabox-connections-wrap .col-module select', function() {
+	$(document).on('change', '.crmservice-metabox-connections-wrap .col-module select, .crmservice-metabox-static-fields-wrap .col-module select', function() {
 
 		// Hide select options.
-		$('.crmservice-metabox-connections-wrap .col-module p.select-options').hide();
+		$(this).closest('.col-module').find('p.select-options').hide();
+		$(this).closest('.col-module').find('p.uitype-user-relation').hide();
 
 		selection_type = $(this).find('option:selected').attr('data-type');
 		if ( 'Select' === selection_type || 'MultiSelect' === selection_type ) {
@@ -99,8 +101,14 @@ jQuery( document ).ready(function( $ ) {
 			});
 
 			// Show possible selection values
-			$(this).parent().find('p.select-options span').html( options.join(', ') );
-			$(this).parent().find('p.select-options').show();
+			$(this).closest('.col-module').find('p.select-options span').html( options.join(', ') );
+			$(this).closest('.col-module').find('p.select-options').show();
+		}
+
+		selection_uitype = $(this).find('option:selected').attr('data-uitype');
+		selection_uitype = selection_uitype.toString();
+		if ( '53' === selection_uitype || '700' === selection_uitype || '702' === selection_uitype || '704' === selection_uitype || '101' === selection_uitype ) {
+			$(this).closest('.col-module').find('p.uitype-user-relation').show();
 		}
 	});
 
@@ -142,6 +150,33 @@ jQuery( document ).ready(function( $ ) {
 			}
 		});
 	} // end disable_module_fields_used
+
+	// Function to show warnign on init state if fields is select, multiselect or user relation.
+	function maybe_show_module_field_notices() {
+		$('.crmservice-metabox-connections-wrap .row-field .col-module select, .crmservice-metabox-static-fields-wrap .row-field .col-module select').each(function() {
+
+			selection_type = $(this).find('option:selected').attr('data-type');
+			if ( 'Select' === selection_type || 'MultiSelect' === selection_type ) {
+				module_field = _.findWhere( module_fields, { name: $(this).find('option:selected').val() } );
+
+				options = $.map(module_field.picklist_values, function(val, i){
+	    		return i;
+				});
+
+				// Show possible selection values
+				$(this).closest('.col-module').find('p.select-options span').html( options.join(', ') );
+				$(this).closest('.col-module').find('p.select-options').show();
+			}
+
+			selection_uitype = $(this).find('option:selected').attr('data-uitype');
+			if ( selection_uitype !== null && selection_uitype !== undefined ) {
+				selection_uitype = selection_uitype.toString();
+				if ( '53' === selection_uitype || '700' === selection_uitype || '702' === selection_uitype || '704' === selection_uitype || '101' === selection_uitype ) {
+					$(this).closest('.col-module').find('p.uitype-user-relation').show();
+				}
+			}
+		});
+	} // end maybe_show_module_field_notices
 
 	// Make form field rows.
 	function populate_form_fields() {
@@ -186,5 +221,6 @@ jQuery( document ).ready(function( $ ) {
 
 		// Hide select options.
 		$('.crmservice-metabox-connections-wrap .col-module p.select-options').hide();
+		$('.crmservice-metabox-connections-wrap .col-module p.uitype-user-relation').hide();
 	} // end function populate_module_fields
 });
