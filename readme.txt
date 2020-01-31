@@ -4,7 +4,7 @@ Tags: crm, crm-service, crm service
 Requires at least: 4.9
 Tested up to: 5.3
 Requires PHP: 7.0
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,10 @@ If you need a support for spesific form plugin, [contact us](https://crm-service
 All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+= 1.2.2 =
+Release date: 2020-01-31
+* Fix: Default value of crmservice_transient_keys to array
 
 = 1.2.1 =
 Release date: 2019-08-06
