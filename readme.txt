@@ -2,16 +2,16 @@
 Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
-Tested up to: 5.2
+Tested up to: 5.3
 Requires PHP: 7.0
 Stable tag: 1.2.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
- 
+
 Integrate your forms easily to the CRM-service!
- 
+
 == Description ==
- 
+
 [CRM-service](https://crm-service.fi/) is the fastest all-in-one CRM on market, that enables Sales Force Automation, Customer Management Automation, Support, Project Management and Invoicing, with Product and Warehouse Management.
 
 **CRM-service is the perfect business solution when performance matters.**
@@ -34,11 +34,11 @@ This plugin integrates with the CRM-service and sends form submissions to the CR
 
 == Frequently Asked Questions ==
 
-= What is CRM-service? = 
+= What is CRM-service? =
 
 CRM-service is cloud-based and fully featured web-based Digital Business Platform with numerous different [features](https://crm-service.fi/product/). Read more from our [website](https://crm-service.fi/).
 
-= Do I need to be customer of the CRM-service? = 
+= Do I need to be customer of the CRM-service? =
 
 This plugin requires you to have a CRM-service instance and API access enabled. If you would like to test and use our fully featured web-based Digital Business Platform, please [contact us](https://crm-service.fi/contact/) and we will be in touch!
 
@@ -49,7 +49,7 @@ At the moment we support the [Contact Form 7](https://wordpress.org/plugins/cont
 If you need a support for spesific form plugin, [contact us](https://crm-service.fi/contact/) and we'll see what we can do!
 
 == Screenshots ==
- 
+
 == Changelog ==
 
 All notable changes to this project will be documented here.
@@ -72,7 +72,7 @@ Release date: 2019-06-10
 * Added: Support Gravity Forms sub-fields (eg. name, address)
 * Fix: Sort module fields in alphabetical order
 * Fix: Do not show Gravity Forms section -field when mapping fields
-* Fix: Order Gravity Forms fields in same order than in form 
+* Fix: Order Gravity Forms fields in same order than in form
 * Improved: Styles on admin when adding new integration
 
 = 1.0.1 =
