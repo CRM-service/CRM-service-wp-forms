@@ -224,9 +224,9 @@ class Helper extends CRMServiceWP\Plugin {
 	 *  @param integer $expiration how long this transient should exist, in seconds.
 	 */
 	public static function set_transient( $key = null, $value = null, $expiration = 900 ) {
-		\add_option( 'crmservice_transient_keys', '', '', 'no' ); // in the name of not autoloading.
+		\add_option( 'crmservice_transient_keys', array(), '', 'no' ); // in the name of not autoloading.
 
-		$transient_keys = \get_option( 'crmservice_transient_keys' );
+		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
 
 		if ( \set_transient( $key, $value, $expiration ) ) {
 			$transient_keys[ $key ] = true;
@@ -244,7 +244,7 @@ class Helper extends CRMServiceWP\Plugin {
 	 *  @param string $key        key/name for transient.
 	 */
 	public static function delete_transient( $key = null ) {
-		$transient_keys = \get_option( 'crmservice_transient_keys' );
+		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
 
 		$delete = \delete_transient( $key );
 		if ( ! $delete ) {
