@@ -2,9 +2,9 @@
 Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
-Tested up to: 5.3
+Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 1.2.2
+Stable tag: 1.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
