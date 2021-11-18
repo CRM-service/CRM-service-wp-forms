@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-06-10 12:11:54
+ * @Last Modified time: 2021-11-18 12:04:58
  *
  * @package crmservice
  */
@@ -266,7 +266,12 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 					'key'				=> '_crmservice_send_fail',
 					'value'			=> '',
 					'operator'	=> 'isnot',
-				)
+				),
+        array(
+          'key'       => '_crmservice_send',
+          'value'     => '',
+          'operator'  => 'is',
+        )
 			)
 		);
 
@@ -285,12 +290,6 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 		// Loop submissions.
 		foreach ( $gf_submissions as $submission ) {
 			$submission_id = (int)$submission['id'];
-
-			// If send has been marked as ok, continue to next submission.
-			$ok = \gform_get_meta( $submission_id, '_crmservice_send' );
-			if ( $ok ) {
-				continue;
-			}
 
 			// Get fail times and add to submission array.
 			$fails = \gform_get_meta( $submission_id, '_crmservice_send_fail' );

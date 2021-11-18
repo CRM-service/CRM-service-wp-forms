@@ -62,6 +62,7 @@ This release fixes Contact Form 7 integration issues with select and checkbox fi
 
 * Added: Format select type field in case its value is array, use the first array element as value
 * Added: Format checkbox field in case its value is array that contains only one value, use the first and only arrat element as value
+* Fix: Improved Gravity Forms failed submissions query to try fix performance issues
 
 = 1.2.2 =
 Release date: 2020-01-31
