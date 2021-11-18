@@ -56,6 +56,10 @@ All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+= 1.3.0 =
+Release date: 2021-11-18
+* Added: Format select type field in case its value is array, use the first array element as value
+
 = 1.2.2 =
 Release date: 2020-01-31
 * Fix: Default value of crmservice_transient_keys to array
