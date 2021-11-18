@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-06-10 12:06:29
+ * @Last Modified time: 2021-11-18 10:52:41
  *
  * @package crmservice
  */
@@ -284,7 +284,11 @@ class FormsCommon extends CRMServiceWP\Plugin {
 			} else {
 				return true;
 			}
-		}
+		} else if ( 'Select' === $type ) {
+      if ( is_array( $value ) ) {
+        return reset( $value );
+      }
+    }
 
 		return $value;
 	} // end maybe_format_field_data_for_crm
