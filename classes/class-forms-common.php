@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-11-18 10:52:41
+ * @Last Modified time: 2021-11-18 11:32:16
  *
  * @package crmservice
  */
@@ -279,6 +279,11 @@ class FormsCommon extends CRMServiceWP\Plugin {
 				return date( 'H:i:s', $time );
 			}
 		} else if ( 'Checkbox' === $type ) {
+      // If field value is array and has only one checkbox value, let's use that as a value
+      if ( is_array( $value ) && 1 === count( $value ) ) {
+        $value = reset( $value );
+      }
+
 			if ( empty( $value ) || 'false' === $value ) {
 				return false;
 			} else {

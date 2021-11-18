@@ -58,7 +58,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 = 1.3.0 =
 Release date: 2021-11-18
+This release fixes Contact Form 7 integration issues with select and checkbox fields by introducing two new value formatters. These value formatters apply for other plugin intregations as well, but shouldn't affect the behaviour for current forms.
+
 * Added: Format select type field in case its value is array, use the first array element as value
+* Added: Format checkbox field in case its value is array that contains only one value, use the first and only arrat element as value
 
 = 1.2.2 =
 Release date: 2020-01-31
