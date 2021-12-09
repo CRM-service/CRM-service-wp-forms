@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-11-18 11:32:16
+ * @Last Modified time: 2021-12-09 15:01:56
  *
  * @package crmservice
  */
@@ -498,6 +498,10 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  @since  1.0.0
 	 */
 	public static function resend_failed_submissions() {
+    if ( ! apply_filters( 'crmservice_forms_resend_failed_submissions', true ) ) {
+      return; // resend disabled, bail.
+    }
+
 		// Get failed submissions.
 		$failed_submissions = self::$form_plugin_instance->get_failed_submissions();
 

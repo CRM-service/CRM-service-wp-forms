@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-11-18 11:33:10
+ * @Last Modified time: 2021-12-09 15:04:05
  *
  * @package crmservice
  */
@@ -324,7 +324,8 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 
 		// Get failed submissions.
 		$cf7_submissions = \Flamingo_Inbound_Message::find( array(
-			'posts_per_page'					=> -1,
+			'posts_per_page'					=> 500,
+      'meta_key'                => '_crmservice_send_fail',
 			'meta_query'							=> array(
 				'relation'	=> 'AND',
 				array(
