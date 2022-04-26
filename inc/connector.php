@@ -93,10 +93,10 @@ class CRMserviceConnector {
       $field = new \StdClass();
       $field->uitype = $rf->uitype;
       $field->label_orig = $field->label = $rf->label;
-      $label_translations = \json_decode($rf->translations);
+      $label_translations = \json_decode($rf->translations, true);
 
       if ($label_translations && \array_key_exists($locale, $label_translations)) {
-        $field->label = $label_translations->{$locale};
+        $field->label = $label_translations[$locale];
       }
 
       $field->name = $rf->name;
