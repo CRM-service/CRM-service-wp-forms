@@ -4,7 +4,7 @@ Tags: crm, crm-service, crm service
 Requires at least: 4.9
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,11 @@ If you need a support for spesific form plugin, [contact us](https://crm-service
 All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+= 1.3.2 =
+Release date: 2022-04-27
+
+* Fixed deprecated use of array_key_exists on object causing errors on PHP 7
 
 = 1.3.1 =
 Release date: 2021-12-09
