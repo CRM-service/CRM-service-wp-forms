@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2022-04-27 14:32:10
+ * @Last Modified time: 2023-05-05 11:14:25
  */
 
 namespace CRMServiceWP;
@@ -83,6 +83,7 @@ if ( ! class_exists( 'Plugin' ) ) :
       if ( \is_admin() ) {
         include_once self::crmservice_base_path( 'classes/admin/class-settings.php' );
         include_once self::crmservice_base_path( 'classes/admin/class-notices.php' );
+        include_once self::crmservice_base_path( 'classes/admin/class-site-health.php' );
 
         \add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin' ) );
       }
