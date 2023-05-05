@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-12-09 15:01:56
+ * @Last Modified time: 2023-05-05 10:55:42
  *
  * @package crmservice
  */
@@ -129,6 +129,10 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  @return array  list of forms
 	 */
 	public static function get_forms_array() {
+    if ( ! self::$form_plugin ) {
+      return [];
+    }
+
 		$forms = self::$form_plugin_instance->get_forms(); // get forms from form spesifi class.
 		return $forms;
 	} // end get_forms
