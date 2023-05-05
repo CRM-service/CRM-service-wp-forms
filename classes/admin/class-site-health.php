@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-25 17:08:45
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2023-05-05 12:02:12
+ * @Last Modified time: 2023-05-05 12:10:22
  */
 
 namespace CRMServiceWP\Admin\SiteHealth;
@@ -119,9 +119,8 @@ class SiteHealth extends CRMServiceWP\Plugin {
     );
 
     $form_plugin = self::$helper->get_form_plugin();
+    $form_plugin_slug = self::$helper->get_form_plugin( true );
     $form_plugin_active = self::$helper->check_if_form_plugin_active();
-
-    $form_plugin_active = false;
 
     if ( ! $form_plugin ) {
       $result['status']      = 'critical';
@@ -131,6 +130,10 @@ class SiteHealth extends CRMServiceWP\Plugin {
       $result['status']      = 'critical';
       $result['label']       = \wp_kses( 'Form plugin is not active', 'crmservice' );
       $result['description'] = \wp_sprintf( \wp_kses( 'The form plugin (%s) you have selected in settings, is not active.', 'crmservice' ), $form_plugin['name'] );
+    } elseif ( 'contact-form-7' === $form_plugin_slug && ! self::$helper->check_contact_form_7_flamingo() ) {
+      $result['status']      = 'recommended';
+      $result['label']       = \wp_kses( 'Resending failed submissions will not work', 'crmservice' );
+      $result['description'] =  \wp_sprintf( \wp_kses( 'The CRM-service plugin will try to resend form submissions to the CRM-service, if the first submission fails for some reason. In order to this feature to work with the Contact Form 7, you need to install the <a href="%s">Flamingo</a> -plugin. It will also save the form submisison directly to WordPress, which is considered as a good practice in general.', 'crmservice' ), \admin_url( 'plugin-install.php?tab=plugin-information&plugin=flamingo' ) );
     }
 
     return $result;
