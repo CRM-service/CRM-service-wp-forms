@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-25 17:08:45
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2023-05-05 11:50:43
+ * @Last Modified time: 2023-05-05 12:02:12
  */
 
 namespace CRMServiceWP\Admin\SiteHealth;
@@ -59,6 +59,11 @@ class SiteHealth extends CRMServiceWP\Plugin {
       'test'  => array( __CLASS__, 'test_crmservice_api_health' ),
     );
 
+    $tests['direct']['crmservice_form_plugin'] = array(
+      'label' => \wp_kses( 'CRM-service form plugin.', 'crmservice' ),
+      'test'  => array( __CLASS__, 'test_crmservice_form_plugin' ),
+    );
+
     return $tests;
   } // end status_tests
 
@@ -72,9 +77,6 @@ class SiteHealth extends CRMServiceWP\Plugin {
   } // end site_status_test_php_modules
 
   public static function test_crmservice_api_health() {
-    $api_credentials = self::$helper->check_api_settings_existance();
-    $api_credentials_health = self::$helper->check_api_credentials_health();
-
     $result = array(
       'label'       => \wp_kses( 'API connection is healthy', 'crmservice' ),
       'status'      => 'good',
@@ -86,6 +88,9 @@ class SiteHealth extends CRMServiceWP\Plugin {
       'actions'     => '',
       'test'        => 'crmservice_api_health',
     );
+
+    $api_credentials = self::$helper->check_api_settings_existance();
+    $api_credentials_health = self::$helper->check_api_credentials_health();
 
     if ( ! $api_credentials ) {
       $result['status']      = 'critical';
@@ -99,6 +104,37 @@ class SiteHealth extends CRMServiceWP\Plugin {
 
     return $result;
   } // end test_crmservice_api_health
+
+  public static function test_crmservice_form_plugin() {
+    $result = array(
+      'label'       => \wp_kses( 'Form plugin configured and active', 'crmservice' ),
+      'status'      => 'good',
+      'badge'       => array(
+        'label' => 'CRM-service',
+        'color' => 'blue',
+      ),
+      'description' => \wp_kses( 'Form plugin to use with CRM-service is configured and selected plugin is active.', 'crmservice' ),
+      'actions'     => '',
+      'test'        => 'crmservice_form_plugin',
+    );
+
+    $form_plugin = self::$helper->get_form_plugin();
+    $form_plugin_active = self::$helper->check_if_form_plugin_active();
+
+    $form_plugin_active = false;
+
+    if ( ! $form_plugin ) {
+      $result['status']      = 'critical';
+      $result['label']       = \wp_kses( 'Form plugin not configured', 'crmservice' );
+      $result['description'] = \wp_sprintf( \wp_kses( 'In <a href="%s">settings page</a>, select a form plugin you want to integrate to.', 'crmservice' ), self::$helper->get_plugin_page_url( array( 'page' => 'crmservice' ) ) );
+    } elseif ( ! $form_plugin_active ) {
+      $result['status']      = 'critical';
+      $result['label']       = \wp_kses( 'Form plugin is not active', 'crmservice' );
+      $result['description'] = \wp_sprintf( \wp_kses( 'The form plugin (%s) you have selected in settings, is not active.', 'crmservice' ), $form_plugin['name'] );
+    }
+
+    return $result;
+  } // end test_crmservice_form_plugin
 }
 
 new SiteHealth();
