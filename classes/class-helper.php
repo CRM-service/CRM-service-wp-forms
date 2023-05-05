@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-05-27 14:10:17
+ * @Last Modified time: 2023-05-05 10:52:45
  *
  * @package crmservice
  */
@@ -85,6 +85,11 @@ class Helper extends CRMServiceWP\Plugin {
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 		$form_plugin = self::get_form_plugin();
+
+    if ( ! isset( $form_plugin['dirfile'] ) ) {
+      return false;
+    }
+
 		return \is_plugin_active( $form_plugin['dirfile'] );
 	} // end check_form_plugin_active
 
