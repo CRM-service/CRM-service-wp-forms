@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-25 17:08:45
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2023-05-05 12:10:22
+ * @Last Modified time: 2023-05-05 14:26:25
  */
 
 namespace CRMServiceWP\Admin\SiteHealth;
@@ -29,6 +29,20 @@ class SiteHealth extends CRMServiceWP\Plugin {
 	 */
 	protected static $helper;
 
+  /**
+   *  Form plugin selected in settings.
+   *
+   *  @var resource
+   */
+  protected static $form_plugin;
+
+  /**
+   *  Instace for form plugin class.
+   *
+   *  @var resource
+   */
+  protected static $form_plugin_instance;
+
 	/**
 	 *  Fire it up!
 	 *
@@ -37,6 +51,22 @@ class SiteHealth extends CRMServiceWP\Plugin {
 	public function __construct() {
 		// Get instance of helper.
 		self::$helper = new CRMServiceWP\Helper\Helper();
+
+    // Get form plugin selected and load it's integration class.
+    self::$form_plugin = self::$helper->get_form_plugin();
+    $form_plugin_active = self::$helper->check_if_form_plugin_active();
+
+    if ( self::$form_plugin && $form_plugin_active ) {
+      $load_slug = self::$form_plugin['slug'];
+      $file_path = CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
+
+      if ( file_exists( $file_path ) ) {
+        include_once CRMServiceWP\Plugin::crmservice_base_path( "classes/form-plugins/{$load_slug}.php" );
+
+        // Load instance for form spesific plugin.
+        self::$form_plugin_instance = new self::$form_plugin['class'];
+      }
+    }
 
 		// Ignition done, give some kick.
 		self::run();
@@ -62,6 +92,11 @@ class SiteHealth extends CRMServiceWP\Plugin {
     $tests['direct']['crmservice_form_plugin'] = array(
       'label' => \wp_kses( 'CRM-service form plugin.', 'crmservice' ),
       'test'  => array( __CLASS__, 'test_crmservice_form_plugin' ),
+    );
+
+    $tests['direct']['crmservice_failed_submissions'] = array(
+      'label' => \wp_kses( 'CRM-service failed submissions.', 'crmservice' ),
+      'test'  => array( __CLASS__, 'test_crmservice_failed_submissions' ),
     );
 
     return $tests;
@@ -119,7 +154,6 @@ class SiteHealth extends CRMServiceWP\Plugin {
     );
 
     $form_plugin = self::$helper->get_form_plugin();
-    $form_plugin_slug = self::$helper->get_form_plugin( true );
     $form_plugin_active = self::$helper->check_if_form_plugin_active();
 
     if ( ! $form_plugin ) {
@@ -130,14 +164,61 @@ class SiteHealth extends CRMServiceWP\Plugin {
       $result['status']      = 'critical';
       $result['label']       = \wp_kses( 'Form plugin is not active', 'crmservice' );
       $result['description'] = \wp_sprintf( \wp_kses( 'The form plugin (%s) you have selected in settings, is not active.', 'crmservice' ), $form_plugin['name'] );
-    } elseif ( 'contact-form-7' === $form_plugin_slug && ! self::$helper->check_contact_form_7_flamingo() ) {
-      $result['status']      = 'recommended';
-      $result['label']       = \wp_kses( 'Resending failed submissions will not work', 'crmservice' );
-      $result['description'] =  \wp_sprintf( \wp_kses( 'The CRM-service plugin will try to resend form submissions to the CRM-service, if the first submission fails for some reason. In order to this feature to work with the Contact Form 7, you need to install the <a href="%s">Flamingo</a> -plugin. It will also save the form submisison directly to WordPress, which is considered as a good practice in general.', 'crmservice' ), \admin_url( 'plugin-install.php?tab=plugin-information&plugin=flamingo' ) );
     }
 
     return $result;
   } // end test_crmservice_form_plugin
+
+  public static function test_crmservice_failed_submissions() {
+    $result = array(
+      'label'       => \wp_kses( 'No failed submissions to be resent', 'crmservice' ),
+      'status'      => 'good',
+      'badge'       => array(
+        'label' => 'CRM-service',
+        'color' => 'blue',
+      ),
+      'description' => \wp_kses( 'All configured form submissions have been sent succesfully to CRM-service.', 'crmservice' ),
+      'actions'     => '',
+      'test'        => 'crmservice_failed_submissions',
+    );
+
+    $form_plugin_slug = self::$helper->get_form_plugin( true );
+    $failed_submissions = self::$form_plugin_instance->get_failed_submissions();
+
+    if ( ! apply_filters( 'crmservice_forms_resend_failed_submissions', true ) ) {
+      $result['status']      = 'recommended';
+      $result['label']       = \wp_kses( 'Resending failed submissions is not active', 'crmservice' );
+      $result['description'] = \wp_kses( 'Resending failed submissions to CRM-service has been disabled with <code>crmservice_forms_resend_failed_submissions</code> filter.', 'crmservice' );
+    }  elseif ( 'contact-form-7' === $form_plugin_slug && ! self::$helper->check_contact_form_7_flamingo() ) {
+      $result['status']      = 'recommended';
+      $result['label']       = \wp_kses( 'Resending failed submissions will not work', 'crmservice' );
+      $result['description'] =  \wp_sprintf( \wp_kses( 'The CRM-service plugin will try to resend form submissions to the CRM-service, if the first submission fails for some reason. In order to this feature to work with the Contact Form 7, you need to install the <a href="%s">Flamingo</a> -plugin. It will also save the form submisison directly to WordPress, which is considered as a good practice in general.', 'crmservice' ), \admin_url( 'plugin-install.php?tab=plugin-information&plugin=flamingo' ) );
+    } elseif ( is_array( $failed_submissions ) && ! empty( $failed_submissions ) ) {
+      $failed_tmp = 0;
+      $failed_perm = 0;
+
+      foreach ( $failed_submissions as $submission_id => $times ) {
+        if ( 3 < count( $times ) ) {
+          $failed_perm++;
+          continue; // continue to next submission if failed more than three times.
+        }
+
+        $failed_tmp++;
+      }
+
+      if ( ! $failed_perm ) {
+        $result['status']      = 'recommended';
+        $result['label']       = \wp_kses( 'Some form submissions have failed', 'crmservice' );
+        $result['description'] = \wp_sprintf( \wp_kses( '%s submissions have failed to be sent to CRM-service. Plugin will still try to resend these submissions to the CRM-service later today.', 'crmservice' ), $failed_tmp );
+      } else {
+        $result['status']      = 'critical';
+        $result['label']       = \wp_kses( 'Some form submissions have failed', 'crmservice' );
+        $result['description'] = \wp_sprintf( \wp_kses( '%s submissions have failed to be sent to CRM-service too many times. Plugin will not try to resend these submissions anymore.', 'crmservice' ), $failed_perm );
+      }
+    }
+
+    return $result;
+  } // end test_crmservice_failed_submissions
 }
 
 new SiteHealth();
