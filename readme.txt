@@ -2,9 +2,9 @@
 Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
-Tested up to: 5.8
+Tested up to: 6.2
 Requires PHP: 7.0
-Stable tag: 1.3.2
+Stable tag: 1.4.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,13 @@ If you need a support for spesific form plugin, [contact us](https://crm-service
 All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+= 1.4.0 =
+Release date: 2023-04-09
+
+* Fix: do not save fail to form entry before we have actually tried to send the data to CRM-service API
+* Fix: various PHP warnings and notices
+* Added: bedugging info to site health checks
 
 = 1.3.2 =
 Release date: 2022-04-27
