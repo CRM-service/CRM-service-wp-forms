@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-12-09 15:01:56
+ * @Last Modified time: 2023-05-09 11:12:55
  *
  * @package crmservice
  */
@@ -129,6 +129,10 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  @return array  list of forms
 	 */
 	public static function get_forms_array() {
+    if ( ! self::$form_plugin ) {
+      return [];
+    }
+
 		$forms = self::$form_plugin_instance->get_forms(); // get forms from form spesifi class.
 		return $forms;
 	} // end get_forms
@@ -432,31 +436,22 @@ class FormsCommon extends CRMServiceWP\Plugin {
 	 *  @return boolean       always true to allow form plugins to continue
 	 */
 	public static function send_form_submission( $var1 = null, $var2 = null, $var3 = null, $var4 = null ) {
-		$bail = false;
 		$send_data = self::$form_plugin_instance->map_fields_for_send( $var1, $var2 );
 		$send_module = self::$form_plugin_instance->get_module_for_send( $var1, $var2 );
 		$prefilled_fields = self::$form_plugin_instance->get_prefilled_fields_for_send( $var1, $var2 );
 
 		if ( ! $send_data ) {
-			$bail = true; // bail because no data, but true for form OK.
+			return true; // need to return true for form plugin to show ok
 		}
 
 		if ( ! $send_module ) {
-			$bail = true; // bail because no module, but true for form OK.
+			return true; // need to return true for form plugin to show ok
 		}
 
 		$module_fields = self::get_module_fields( $send_module );
 
 		if ( ! $module_fields ) {
-			$bail = true; // bail because no module fields, but true for form OK.
-		}
-
-		/**
-		 *  Need to bail? Then do it and add timestamp of failed attempt to form meta.
-		 */
-		if ( $bail ) {
-			self::$form_plugin_instance->set_send_fail( $var1 );
-			return true;
+			return true; // need to return true for form plugin to show ok
 		}
 
 		// Maybe combine from data and prefilled fields

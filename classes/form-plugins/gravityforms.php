@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2021-11-18 12:04:58
+ * @Last Modified time: 2023-05-05 11:07:16
  *
  * @package crmservice
  */
@@ -50,6 +50,10 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	 *  @return array  list of forms
 	 */
 	public static function get_forms() {
+    if ( ! class_exists( 'GFAPI' ) ) {
+      return [];
+    }
+
 		$forms = array();
 		$gforms = \GFAPI::get_forms();
 
@@ -73,6 +77,10 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 		if ( ! $form_id ) {
 			return;
 		}
+
+    if ( ! class_exists( 'GFAPI' ) ) {
+      return;
+    }
 
 		// Defaults.
 		$fields = array();
@@ -255,8 +263,11 @@ class FormsGravityForms extends CRMServiceWP\Plugin {
 	 *  @return mixed  false or array with submission id as key and try times array as value
 	 */
 	public static function get_failed_submissions() {
-		$submissions = array();
+    if ( ! class_exists( 'GFAPI' ) ) {
+      return [];
+    }
 
+		$submissions = array();
 
 		// Args for GF submission get.
 		$search_criteria = array(

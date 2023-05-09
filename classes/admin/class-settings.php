@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2018-05-08 10:53:22
+ * @Last Modified time: 2023-05-05 11:13:21
  *
  * @package crmservice
  */
@@ -294,7 +294,7 @@ class Settings extends CRMServiceWP\Plugin {
 					$message .= "{$plugin}: " . $data['Version'] . "\r\n";
 				}
 
-				\wp_mail( 'timi@dude.fi', 'WP Plugin bug report', $message );
+				\wp_mail( 'info@crm-service.fi', 'WP Plugin bug report', $message );
 			endif;
 		endif;
 	} // end maybe_send_bugreport

@@ -11,9 +11,9 @@
  * Author URI:        https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version:           1.3.2
+ * Version:           1.4.0
  * Requires at least: 4.9
- * Tested up to:      5.8
+ * Tested up to:      6.2
  *
  * Text Domain: crmservice
  * Domain Path: /languages
@@ -21,7 +21,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-02-27 15:47:00
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2022-04-27 14:32:10
+ * @Last Modified time: 2023-05-09 11:14:23
  */
 
 namespace CRMServiceWP;
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-  define( 'CRMSERVICEWP_VERSION', '1.3.2' );
+  define( 'CRMSERVICEWP_VERSION', '1.4.0' );
 
   /**
    *  Main class for plugin.
@@ -83,6 +83,7 @@ if ( ! class_exists( 'Plugin' ) ) :
       if ( \is_admin() ) {
         include_once self::crmservice_base_path( 'classes/admin/class-settings.php' );
         include_once self::crmservice_base_path( 'classes/admin/class-notices.php' );
+        include_once self::crmservice_base_path( 'classes/admin/class-site-health.php' );
 
         \add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin' ) );
       }
