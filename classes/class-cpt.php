@@ -5,7 +5,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 12:45:59
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2019-05-27 14:29:52
+ * @Last Modified time: 2023-05-05 11:05:09
  *
  * @package crmservice
  */
@@ -129,6 +129,15 @@ class CPT extends CRMServiceWP\Plugin {
 		$new_form_url = null;
 		$form_fields = array();
 		$conections = array();
+
+    $screen = \get_current_screen();
+
+    if ( 'post' === $screen->base && 'crmservice_form' === $screen->post_type && isset( $_GET['post'] ) ) {
+      $form_plugin = \get_post_meta( (int) \sanitize_text_field( \wp_unslash( $_GET['post'] ) ), '_crmservice_form_plugin', true );
+      if ( $form_plugin !== self::$helper->get_form_plugin( true ) ) {
+        return;
+      }
+    }
 
 		// Get forms for active form plugin.
 		$forms = CRMServiceWP\Forms\Common\FormsCommon::get_forms_array();
