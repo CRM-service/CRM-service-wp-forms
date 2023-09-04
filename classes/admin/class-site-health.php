@@ -4,7 +4,7 @@
  * @Author: Timi Wahalahti
  * @Date:   2018-04-25 17:08:45
  * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2023-05-05 14:26:25
+ * @Last Modified time: 2023-05-25 09:51:16
  */
 
 namespace CRMServiceWP\Admin\SiteHealth;
@@ -181,6 +181,10 @@ class SiteHealth extends CRMServiceWP\Plugin {
       'actions'     => '',
       'test'        => 'crmservice_failed_submissions',
     );
+
+    if ( ! self::$helper->check_if_form_plugin_active() ) {
+      return $result;
+    }
 
     $form_plugin_slug = self::$helper->get_form_plugin( true );
     $failed_submissions = self::$form_plugin_instance->get_failed_submissions();
