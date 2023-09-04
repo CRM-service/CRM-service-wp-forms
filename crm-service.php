@@ -163,4 +163,3 @@ endif;
 // Add plugin activation and deactivation hooks.
 register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activation' );
 register_deactivation_hook( __FILE__, __NAMESPACE__ . '\\plugin_deactivation' );
-
