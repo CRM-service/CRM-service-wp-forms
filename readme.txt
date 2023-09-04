@@ -2,9 +2,9 @@
 Contributors: crmservice
 Tags: crm, crm-service, crm service
 Requires at least: 4.9
-Tested up to: 6.2
+Tested up to: 6.3
 Requires PHP: 7.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,11 @@ If you need a support for spesific form plugin, [contact us](https://crm-service
 All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+= 1.4.1 =
+Release date: 2023-09-04
+
+* Fix: Instead of listing saved connections, list all form fields and check if there is already a connection made. This allows modifying and adding new connections when form fields changes after making the first connections.
 
 = 1.4.0 =
 Release date: 2023-04-09
