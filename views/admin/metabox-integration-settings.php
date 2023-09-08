@@ -4,8 +4,8 @@
  *
  * @Author: Timi Wahalahti
  * @Date:   2018-03-30 14:10:28
- * @Last Modified by:   Timi Wahalahti
- * @Last Modified time: 2023-09-04 14:32:37
+ * @Last Modified by:   sippis
+ * @Last Modified time: 2023-09-08 15:00:06
  *
  * @package crmservice
  */
@@ -99,7 +99,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       $field_connection = null;
 
       foreach ( $saved_conections as $connection ) {
-        if ( absint( $form_field_key ) !== absint( $connection['form_field'] ) ) {
+        if ( $form_field_key !== $connection['form_field'] ) {
           continue;
         }
 
