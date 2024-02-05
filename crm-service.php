@@ -11,7 +11,7 @@
  * Author URI:        https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version:           1.4.4
+ * Version:           1.4.5
  * Requires at least: 4.9
  * Tested up to:      6.3
  *
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-  define( 'CRMSERVICEWP_VERSION', '1.4.4' );
+  define( 'CRMSERVICEWP_VERSION', '1.4.5' );
 
   /**
    *  Main class for plugin.
@@ -116,7 +116,7 @@ if ( ! class_exists( 'Plugin' ) ) :
 
       if ( 'post' === $screen->base || 'edit' === $screen->base ) {
         if ( 'crmservice_form' === $screen->post_type ) {
-          \wp_enqueue_script( 'crmservice', \plugins_url( 'assets/admin/metabox.js', __FILE__ ), array(), '1.1.0', true );
+          \wp_enqueue_script( 'crmservice', \plugins_url( 'assets/admin/metabox.js', __FILE__ ), array(), null, true );
           \wp_localize_script( 'crmservice', 'crmservice', array(
             'root'      => \esc_url_raw( \rest_url() ),
             'nonce'     => \wp_create_nonce( 'wp_rest' ),

@@ -469,13 +469,13 @@ class FormsCommon extends CRMServiceWP\Plugin {
 				$send_data[ $key ] = self::maybe_format_field_data_for_crm( $module_field->type, $value );
 			}
 		}
-
+		
 		// Do the send.
 		$send_result = CRMServiceWP\API\API::call_api( 'savedata', array(
 			'module'	=> $send_module,
 			'data'		=> $send_data,
 		) );
-
+ 
 		if ( ! $send_result ) {
 			// Send failed, add timestamp of failed attempt.
 			self::$form_plugin_instance->set_send_fail( $var1 );
