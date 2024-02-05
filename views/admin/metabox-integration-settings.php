@@ -99,14 +99,14 @@ if ( ! defined( 'ABSPATH' ) ) {
       $field_connection = null;
 
       foreach ( $saved_conections as $connection ) {
-        if ( $form_field_key !== $connection['form_field'] ) {
+        if ( strval( $form_field_key ) !== strval( $connection['form_field'] ) ) {
           continue;
         }
 
         $field_connection = $connection;
       }
 
-       ?>
+      ?>
       <div id="form-row-<?php echo $x; ?>" class="row row-field">
         <div class="col col-form">
           <p><?php echo $form_field; ?></p>
@@ -118,7 +118,8 @@ if ( ! defined( 'ABSPATH' ) ) {
               <select name="crmservice_connections[<?php echo $x; ?>][module_field]">
                 <option value="0" data-type="0" data-uitype="0"><?php \esc_attr_e( 'Select', 'crmservice' ); ?></option>
 
-                <?php foreach ( $module_fields as $module_field_id => $module_field ) : ?>
+                <?php foreach ( $module_fields as $module_field_id => $module_field ) :
+                   ?>
                   <option value="<?php echo $module_field->name; ?>" data-type="<?php echo $module_field->type; ?>" data-uitype="<?php echo $module_field->uitype; ?>" <?php if ( $field_connection && $field_connection['module_field'] === $module_field->name ) { echo ' selected'; } ?>><?php echo $module_field->label; ?> (<?php echo $module_field->type; ?>)</option>
                 <?php endforeach; ?>
               </select>

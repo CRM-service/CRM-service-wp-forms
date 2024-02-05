@@ -340,8 +340,8 @@ class FormsContactForm7 extends CRMServiceWP\Plugin {
 
 		// Loop failed and get try times.
 		foreach ( $cf7_submissions as $submission ) {
-			$failed_submissions = \get_post_meta( $submission->id, '_crmservice_send_fail', true );
-			$submissions[ $submission->id ] = $failed_submissions;
+			$failed_submissions = \get_post_meta( $submission->id(), '_crmservice_send_fail', true );
+			$submissions[ $submission->id() ] = $failed_submissions;
 		}
 
 		return $submissions;
