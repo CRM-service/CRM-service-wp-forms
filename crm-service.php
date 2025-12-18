@@ -11,9 +11,9 @@
  * Author URI:        https://crm-service.fi/
  * License:           GPLv2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Version:           1.4.5
+ * Version:           1.4.6
  * Requires at least: 4.9
- * Tested up to:      6.3
+ * Tested up to:      6.9
  *
  * Text Domain: crmservice
  * Domain Path: /languages
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Plugin' ) ) :
-  define( 'CRMSERVICEWP_VERSION', '1.4.5' );
+  define( 'CRMSERVICEWP_VERSION', '1.4.6' );
 
   /**
    *  Main class for plugin.
@@ -69,6 +69,15 @@ if ( ! class_exists( 'Plugin' ) ) :
      *  @since  1.0.0
      */
     public static function load() {
+      // Suppress WordPress 6.7 "too early" notice for textdomain loading
+      // We need translations before init hook for form plugin detection
+      add_filter( 'doing_it_wrong_trigger_error', function( $trigger, $function ) {
+        if ( '_load_textdomain_just_in_time' === $function ) {
+            return false;
+        }
+
+        return $trigger;
+      }, 10, 2 );
 
       // Include files needed always.
       include_once self::crmservice_base_path( 'classes/class-helper.php' );
