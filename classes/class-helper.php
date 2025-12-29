@@ -233,6 +233,11 @@ class Helper extends CRMServiceWP\Plugin {
 
 		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
 
+    // Ensure $transient_keys is always an array
+    if ( ! is_array( $transient_keys ) ) {
+      $transient_keys = array();
+    }
+
 		if ( \set_transient( $key, $value, $expiration ) ) {
 			$transient_keys[ $key ] = true;
 			\update_option( 'crmservice_transient_keys', $transient_keys );
@@ -250,6 +255,11 @@ class Helper extends CRMServiceWP\Plugin {
 	 */
 	public static function delete_transient( $key = null ) {
 		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
+
+    // Ensure $transient_keys is always an array
+    if ( ! is_array( $transient_keys ) ) {
+      $transient_keys = array();
+    }
 
 		$delete = \delete_transient( $key );
 		if ( ! $delete ) {
@@ -272,6 +282,11 @@ class Helper extends CRMServiceWP\Plugin {
 	 */
 	public static function purge_cache() {
 		$transient_keys = \get_option( 'crmservice_transient_keys', array() );
+
+    // Ensure $transient_keys is always an array
+    if ( ! is_array( $transient_keys ) ) {
+      $transient_keys = array();
+    }
 
 		foreach ( $transient_keys as $transient_key => $value ) {
 			$deleted = \delete_transient( $transient_key );

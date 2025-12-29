@@ -34,7 +34,7 @@ class CRMserviceConnector {
     $this->crm_url = $url;
 
     foreach(['session', 'field', 'entity', 'picklist'] as $manager_name) {
-      $this->managers[$manager_name] = $this->initCrmManager($manager_name);
+      $this->crm_managers[$manager_name] = $this->initCrmManager($manager_name);
     }
 
     try {
@@ -166,7 +166,7 @@ class CRMserviceConnector {
   }
 
   private function manager(string $type) {
-    return $this->managers[$type];
+    return $this->crm_managers[$type];
   }
 
   private function initCrmManager(string $type) {
